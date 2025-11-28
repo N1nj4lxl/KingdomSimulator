@@ -70,66 +70,8 @@ log3 = ("")
 log4 = ("")
 log5 = ("")
 
-#============ STONE AGE =============
-itemlock1 = ("UNLOCKED")
-itemlock2 = ("UNLOCKED")
-itemlock3 = ("UNLOCKED")
-itemlock4 = ("UNLOCKED")
-itemlock5 = ("UNLOCKED")
-
-#=========== BRONZE AGE =============
-agelock1 = ("LOCKED")
-
-itemlock6 = ("LOCKED")
-itemlock7 = ("LOCKED")
-itemlock8 = ("LOCKED")
-itemlock9 = ("LOCKED")
-itemlock10 = ("LOCKED")
-
-#=========== IRON AGE =============
-agelock2 = ("LOCKED")
-
-itemlock11 = ("LOCKED")
-itemlock12 = ("LOCKED")
-itemlock13 = ("LOCKED")
-itemlock14 = ("LOCKED")
-itemlock15 = ("LOCKED")
-
-#=========== ROMANS AGE =============
-agelock3 = ("LOCKED")
-
-itemlock16 = ("LOCKED")
-itemlock17 = ("LOCKED")
-itemlock18 = ("LOCKED")
-itemlock19 = ("LOCKED")
-itemlock20 = ("LOCKED")
-
-#=========== MEDIEVIL AGE =============
-agelock4 = ("LOCKED")
-
-itemlock21 = ("LOCKED")
-itemlock22 = ("LOCKED")
-itemlock23 = ("LOCKED")
-itemlock24 = ("LOCKED")
-itemlock25 = ("LOCKED")
-
-#=========== ELECTRIC AGE =============
-agelock5 = ("LOCKED")
-
-itemlock26 = ("LOCKED")
-itemlock27 = ("LOCKED")
-itemlock28 = ("LOCKED")
-itemlock29 = ("LOCKED")
-itemlock30 = ("LOCKED")
-
-#=========== MODERN AGE =============
-agelock6 = ("LOCKED")
-
-itemlock31 = ("LOCKED")
-itemlock32 = ("LOCKED")
-itemlock33 = ("LOCKED")
-itemlock34 = ("LOCKED")
-itemlock35 = ("LOCKED")
+item_locks = ["UNLOCKED"] * 5 + ["LOCKED"] * 30
+age_locks = ["LOCKED"] * 6
 
 number = -1
 era = ["Bronze Age","Iron Age","Roman Age","Medievil Age","Electric Age","Modern Age"]
@@ -237,11 +179,57 @@ def inv():
     print (hpotion, "x - Health Potions")
     filler()
     
-def unlock_era(era_name, unlock_items, enemy_stats):
-    for item in unlock_items:
-        globals()[item] = "UNLOCKED"
+def set_item_locks(indices, value="UNLOCKED"):
+    for index in indices:
+        item_locks[index] = value
+
+
+def unlock_era(unlock_items, enemy_stats, age_index=None, bronze_unlock=False):
+    global bronze
+    if age_index is not None:
+        age_locks[age_index] = "UNLOCKED"
+    if bronze_unlock:
+        bronze = 1
+    set_item_locks(unlock_items)
     for stat, value in enemy_stats.items():
         globals()[stat] = value
+
+
+state_file_pairs = [
+    ("money", "money.dat"),
+    ("exmoney", "exmoney.dat"),
+    ("day", "day.dat"),
+    ("happiness", "happiness.dat"),
+    ("people", "people.dat"),
+    ("maxpeople", "maxpeople.dat"),
+    ("hpotion", "hpotion.dat"),
+    ("bread", "bread.dat"),
+    ("maximumPlayerdamage", "maximumPlayerdamage.dat"),
+    ("minimumPlayerdamage", "minimumPlayerdamage.dat"),
+    ("wfight", "wfight.dat"),
+    ("lfight", "lfight.dat"),
+    ("currentSword", "currentSword.dat"),
+    ("name", "name.dat"),
+    ("number", "number.dat"),
+    ("currentEra", "currentEra.dat"),
+]
+
+item_lock_files = [f"itemlock{i}.dat" for i in range(1, 36)]
+item_lock_save_map = [0, 1, 2, 3, 4, 5, 6, 7, 7] + list(range(9, 35))
+
+
+def load_game_state():
+    for var, filename in state_file_pairs:
+        globals()[var] = pickle.load(open(filename, "rb"))
+    for index, filename in enumerate(item_lock_files):
+        item_locks[index] = pickle.load(open(filename, "rb"))
+
+
+def save_game_state():
+    for var, filename in state_file_pairs:
+        pickle.dump(globals()[var], open(filename, "wb"))
+    for index, filename in enumerate(item_lock_files):
+        pickle.dump(item_locks[item_lock_save_map[index]], open(filename, "wb"))
 
 #================================================== OPTIONS ======================================================
 
@@ -296,57 +284,7 @@ while loop == 1:
                 print ("Please wait a few seconds for the game to load (BETA)")
                 time.sleep(2)
 
-                money = pickle.load(open("money.dat","rb"))
-                exmoney = pickle.load(open("exmoney.dat","rb"))
-                day = pickle.load(open("day.dat","rb"))
-                happiness = pickle.load(open("happiness.dat","rb"))
-                people = pickle.load(open("people.dat","rb"))
-                maxpeople = pickle.load(open("maxpeople.dat","rb"))
-                hpotion = pickle.load(open("hpotion.dat","rb"))
-                bread = pickle.load(open("bread.dat","rb"))
-                maximumPlayerdamage = pickle.load(open("maximumPlayerdamage.dat","rb"))
-                minimumPlayerdamage = pickle.load(open("minimumPlayerdamage.dat","rb"))
-                wfight = pickle.load(open("wfight.dat","rb"))
-                lfight = pickle.load(open("lfight.dat","rb"))
-                currentSword = pickle.load(open("currentSword.dat","rb"))
-                itemlock1 = pickle.load(open("itemlock1.dat","rb"))
-                itemlock2 = pickle.load(open("itemlock2.dat","rb"))
-                itemlock3 = pickle.load(open("itemlock3.dat","rb"))
-                name = pickle.load(open("name.dat","rb"))
-                number = pickle.load(open("number.dat","rb"))
-                currentEra = pickle.load(open("currentEra.dat","rb"))
-                itemlock35 = pickle.load(open("itemlock35.dat","rb"))
-                itemlock34 = pickle.load(open("itemlock34.dat","rb"))
-                itemlock33 = pickle.load(open("itemlock33.dat","rb"))
-                itemlock32 = pickle.load(open("itemlock32.dat","rb"))
-                itemlock31 = pickle.load(open("itemlock31.dat","rb"))
-                itemlock30 = pickle.load(open("itemlock30.dat","rb"))
-                itemlock29 = pickle.load(open("itemlock29.dat","rb"))
-                itemlock28 = pickle.load(open("itemlock28.dat","rb"))
-                itemlock27 = pickle.load(open("itemlock27.dat","rb"))
-                itemlock26 = pickle.load(open("itemlock26.dat","rb"))
-                itemlock25 = pickle.load(open("itemlock25.dat","rb"))
-                itemlock24 = pickle.load(open("itemlock24.dat","rb"))
-                itemlock23 = pickle.load(open("itemlock23.dat","rb"))
-                itemlock22 = pickle.load(open("itemlock22.dat","rb"))
-                itemlock21 = pickle.load(open("itemlock21.dat","rb"))
-                itemlock20 = pickle.load(open("itemlock20.dat","rb"))
-                itemlock19 = pickle.load(open("itemlock19.dat","rb"))
-                itemlock18 = pickle.load(open("itemlock18.dat","rb"))
-                itemlock17 = pickle.load(open("itemlock17.dat","rb"))
-                itemlock16 = pickle.load(open("itemlock16.dat","rb"))
-                itemlock15 = pickle.load(open("itemlock15.dat","rb"))
-                itemlock14 = pickle.load(open("itemlock14.dat","rb"))
-                itemlock13 = pickle.load(open("itemlock13.dat","rb"))
-                itemlock12 = pickle.load(open("itemlock12.dat","rb"))
-                itemlock11 = pickle.load(open("itemlock11.dat","rb"))
-                itemlock10 = pickle.load(open("itemlock10.dat","rb"))
-                itemlock9 = pickle.load(open("itemlock9.dat","rb"))
-                itemlock8 = pickle.load(open("itemlock8.dat","rb"))
-                itemlock7 = pickle.load(open("itemlock7.dat","rb"))
-                itemlock6 = pickle.load(open("itemlock6.dat","rb"))
-                itemlock5 = pickle.load(open("itemlock5.dat","rb"))
-                itemlock4 = pickle.load(open("itemlock4.dat","rb"))
+                load_game_state()
                 
                 
                 print ("")
@@ -502,7 +440,7 @@ while loop == 1:
                         if currentEra == ("Bronze Age"):
                             if bronze == 0:
                                 bronze = 1
-                                agelock1 = ("UNLOCKED")
+                                age_locks[0] = ("UNLOCKED")
                                 itemlock6 = ("UNLOCKED")
                                 itemlock7 = ("UNLOCKED")
                                 itemlock8 = ("UNLOCKED")
@@ -524,7 +462,7 @@ while loop == 1:
                                 minimumEnemycoinsEASY = 100
                                 maximumEnemycoinsEASY = 500
                         if currentEra == ("Iron Age"):
-                            agelock2 = ("UNLOCKED")
+                            age_locks[1] = ("UNLOCKED")
                             itemlock11 = ("UNLOCKED")
                             itemlock12 = ("UNLOCKED")
                             itemlock13 = ("UNLOCKED")
@@ -546,7 +484,7 @@ while loop == 1:
                             minimumEnemycoinsEASY = 300
                             maximumEnemycoinsEASY = 800
                         if currentEra == ("Roman Age"):
-                            agelock3 = ("UNLOCKED")
+                            age_locks[2] = ("UNLOCKED")
                             itemlock16 = ("UNLOCKED")
                             itemlock17 = ("UNLOCKED")
                             itemlock18 = ("UNLOCKED")
@@ -565,7 +503,7 @@ while loop == 1:
                             minimumEnemycoinsEASY = 600
                             maximumEnemycoinsEASY = 1000
                         if currentEra == ("Medievil Age"):
-                            agelock4 = ("UNLOCKED")
+                            age_locks[3] = ("UNLOCKED")
                             itemlock21 = ("UNLOCKED")
                             itemlock22 = ("UNLOCKED")
                             itemlock23 = ("UNLOCKED")
@@ -584,7 +522,7 @@ while loop == 1:
                             minimumEnemycoinsEASY = 1000
                             maximumEnemycoinsEASY = 1400
                         if currentEra == ("Electric Age"):
-                            agelock5 = ("UNLOCKED")
+                            age_locks[4] = ("UNLOCKED")
                             itemlock26 = ("UNLOCKED")
                             itemlock27 = ("UNLOCKED")
                             itemlock28 = ("UNLOCKED")
@@ -603,7 +541,7 @@ while loop == 1:
                             minimumEnemycoinsEASY = 2000
                             maximumEnemycoinsEASY = 3000
                         if currentEra == ("Modern Age"):
-                            agelock6 = ("UNLOCKED")
+                            age_locks[5] = ("UNLOCKED")
                             itemlock31 = ("UNLOCKED")
                             itemlock32 = ("UNLOCKED")
                             itemlock33 = ("UNLOCKED")
@@ -644,33 +582,40 @@ while loop == 1:
                     strength -= 1
                     log5 = f"Your Strength has gone down: {strength} Strength Left"
                     unlock_data = {
-                        "Bronze Age": (
-                            ["bronze", "agelock1", "itemlock6", "itemlock7", "itemlock8", "itemlock9", "itemlock10"],
-                            {"enemyHealthEASY": 200, "minimumEnemydamageEASY": 5, "maximumEnemydamageEASY": 10, "enemyHealthMEDIUM": 300, "minimumEnemydamageMEDIUM": 7, "maximumEnemydamageMEDIUM": 15, "enemyHealthHARD": 400, "minimumEnemydamageHARD": 15, "maximumEnemydamageHARD": 25, "minimumEnemycoinsHARD": 300, "maximumEnemycoinsHARD": 1200, "minimumEnemycoinsMEDIUM": 200, "maximumEnemycoinsMEDIUM": 700, "minimumEnemycoinsEASY": 100, "maximumEnemycoinsEASY": 500}
-                        ),
-                        "Iron Age": (
-                            ["agelock2", "itemlock11", "itemlock12", "itemlock13", "itemlock14", "itemlock15"],
-                            {"enemyHealthEASY": 300, "minimumEnemydamageEASY": 7, "maximumEnemydamageEASY": 15, "enemyHealthMEDIUM": 400, "minimumEnemydamageMEDIUM": 12, "maximumEnemydamageMEDIUM": 18, "enemyHealthHARD": 600, "minimumEnemydamageHARD": 15, "maximumEnemydamageHARD": 30, "minimumEnemycoinsHARD": 600, "maximumEnemycoinsHARD": 1700, "minimumEnemycoinsMEDIUM": 500, "maximumEnemycoinsMEDIUM": 900, "minimumEnemycoinsEASY": 300, "maximumEnemycoinsEASY": 800}
-                        ),
-                        "Roman Age": (
-                            ["agelock3", "itemlock16", "itemlock17", "itemlock18", "itemlock19", "itemlock20"],
-                            {"minimumEnemydamageEASY": 12, "maximumEnemydamageEASY": 18, "minimumEnemydamageMEDIUM": 15, "maximumEnemydamageMEDIUM": 25, "minimumEnemydamageHARD": 20, "maximumEnemydamageHARD": 40, "minimumEnemycoinsHARD": 1200, "maximumEnemycoinsHARD": 2000, "minimumEnemycoinsMEDIUM": 800, "maximumEnemycoinsMEDIUM": 1100, "minimumEnemycoinsEASY": 600, "maximumEnemycoinsEASY": 1000}
-                        ),
-                        "Medievil Age": (
-                            ["agelock4", "itemlock21", "itemlock22", "itemlock23", "itemlock24", "itemlock25"],
-                            {"minimumEnemydamageEASY": 15, "maximumEnemydamageEASY": 25, "minimumEnemydamageMEDIUM": 20, "maximumEnemydamageMEDIUM": 30, "minimumEnemydamageHARD": 25, "maximumEnemydamageHARD": 45, "minimumEnemycoinsHARD": 2000, "maximumEnemycoinsHARD": 4000, "minimumEnemycoinsMEDIUM": 1500, "maximumEnemycoinsMEDIUM": 2000, "minimumEnemycoinsEASY": 1000, "maximumEnemycoinsEASY": 1400}
-                        ),
-                        "Electric Age": (
-                            ["agelock5", "itemlock26", "itemlock27", "itemlock28", "itemlock29", "itemlock30"],
-                            {"minimumEnemydamageEASY": 20, "maximumEnemydamageEASY": 30, "minimumEnemydamageMEDIUM": 25, "maximumEnemydamageMEDIUM": 37, "minimumEnemydamageHARD": 30, "maximumEnemydamageHARD": 55, "minimumEnemycoinsHARD": 8000, "maximumEnemycoinsHARD": 10000, "minimumEnemycoinsMEDIUM": 4500, "maximumEnemycoinsMEDIUM": 7000, "minimumEnemycoinsEASY": 2000, "maximumEnemycoinsEASY": 3000}
-                        ),
-                        "Modern Age": (
-                            ["agelock6", "itemlock31", "itemlock32", "itemlock33", "itemlock34", "itemlock35"],
-                            {"minimumEnemydamageEASY": 25, "maximumEnemydamageEASY": 37, "minimumEnemydamageMEDIUM": 30, "maximumEnemydamageMEDIUM": 45, "minimumEnemydamageHARD": 35, "maximumEnemydamageHARD": 60, "minimumEnemycoinsHARD": 20000, "maximumEnemycoinsHARD": 50000, "minimumEnemycoinsMEDIUM": 10000, "maximumEnemycoinsMEDIUM": 15000, "minimumEnemycoinsEASY": 5000, "maximumEnemycoinsEASY": 9000}
-                        )
+                        "Bronze Age": {
+                            "unlock_items": [5, 6, 7, 8, 9],
+                            "enemy_stats": {"enemyHealthEASY": 200, "minimumEnemydamageEASY": 5, "maximumEnemydamageEASY": 10, "enemyHealthMEDIUM": 300, "minimumEnemydamageMEDIUM": 7, "maximumEnemydamageMEDIUM": 15, "enemyHealthHARD": 400, "minimumEnemydamageHARD": 15, "maximumEnemydamageHARD": 25, "minimumEnemycoinsHARD": 300, "maximumEnemycoinsHARD": 1200, "minimumEnemycoinsMEDIUM": 200, "maximumEnemycoinsMEDIUM": 700, "minimumEnemycoinsEASY": 100, "maximumEnemycoinsEASY": 500},
+                            "age_index": 0,
+                            "bronze_unlock": True,
+                        },
+                        "Iron Age": {
+                            "unlock_items": [10, 11, 12, 13, 14],
+                            "enemy_stats": {"enemyHealthEASY": 300, "minimumEnemydamageEASY": 7, "maximumEnemydamageEASY": 15, "enemyHealthMEDIUM": 400, "minimumEnemydamageMEDIUM": 12, "maximumEnemydamageMEDIUM": 18, "enemyHealthHARD": 600, "minimumEnemydamageHARD": 15, "maximumEnemydamageHARD": 30, "minimumEnemycoinsHARD": 600, "maximumEnemycoinsHARD": 1700, "minimumEnemycoinsMEDIUM": 500, "maximumEnemycoinsMEDIUM": 900, "minimumEnemycoinsEASY": 300, "maximumEnemycoinsEASY": 800},
+                            "age_index": 1,
+                        },
+                        "Roman Age": {
+                            "unlock_items": [15, 16, 17, 18, 19],
+                            "enemy_stats": {"minimumEnemydamageEASY": 12, "maximumEnemydamageEASY": 18, "minimumEnemydamageMEDIUM": 15, "maximumEnemydamageMEDIUM": 25, "minimumEnemydamageHARD": 20, "maximumEnemydamageHARD": 40, "minimumEnemycoinsHARD": 1200, "maximumEnemycoinsHARD": 2000, "minimumEnemycoinsMEDIUM": 800, "maximumEnemycoinsMEDIUM": 1100, "minimumEnemycoinsEASY": 600, "maximumEnemycoinsEASY": 1000},
+                            "age_index": 2,
+                        },
+                        "Medievil Age": {
+                            "unlock_items": [20, 21, 22, 23, 24],
+                            "enemy_stats": {"minimumEnemydamageEASY": 15, "maximumEnemydamageEASY": 25, "minimumEnemydamageMEDIUM": 20, "maximumEnemydamageMEDIUM": 30, "minimumEnemydamageHARD": 25, "maximumEnemydamageHARD": 45, "minimumEnemycoinsHARD": 2000, "maximumEnemycoinsHARD": 4000, "minimumEnemycoinsMEDIUM": 1500, "maximumEnemycoinsMEDIUM": 2000, "minimumEnemycoinsEASY": 1000, "maximumEnemycoinsEASY": 1400},
+                            "age_index": 3,
+                        },
+                        "Electric Age": {
+                            "unlock_items": [25, 26, 27, 28, 29],
+                            "enemy_stats": {"minimumEnemydamageEASY": 20, "maximumEnemydamageEASY": 30, "minimumEnemydamageMEDIUM": 25, "maximumEnemydamageMEDIUM": 37, "minimumEnemydamageHARD": 30, "maximumEnemydamageHARD": 55, "minimumEnemycoinsHARD": 8000, "maximumEnemycoinsHARD": 10000, "minimumEnemycoinsMEDIUM": 4500, "maximumEnemycoinsMEDIUM": 7000, "minimumEnemycoinsEASY": 2000, "maximumEnemycoinsEASY": 3000},
+                            "age_index": 4,
+                        },
+                        "Modern Age": {
+                            "unlock_items": [30, 31, 32, 33, 34],
+                            "enemy_stats": {"minimumEnemydamageEASY": 25, "maximumEnemydamageEASY": 37, "minimumEnemydamageMEDIUM": 30, "maximumEnemydamageMEDIUM": 45, "minimumEnemydamageHARD": 35, "maximumEnemydamageHARD": 60, "minimumEnemycoinsHARD": 20000, "maximumEnemycoinsHARD": 50000, "minimumEnemycoinsMEDIUM": 10000, "maximumEnemycoinsMEDIUM": 15000, "minimumEnemycoinsEASY": 5000, "maximumEnemycoinsEASY": 9000},
+                            "age_index": 5,
+                        },
                     }
                     if currentEra in unlock_data:
-                        unlock_era(currentEra, *unlock_data[currentEra])
+                        unlock_era(**unlock_data[currentEra])
                 else:
                     amount = exmoney - money
                     print(f"You do not have the required amount of Coins. You need {amount} Coins to expand")
@@ -743,75 +688,75 @@ while loop == 1:
                         print ("================ Stone Age ================")
                         print ("       Name                      Price         Purchasable")
                         print ("")
-                        print ("1: Pebble                    (1000 Coins)    (",itemlock1,")")
-                        print ("2: Stone                     (5000 Coins)    (",itemlock2,")")
-                        print ("3: Rock                      (7500 Coins)    (",itemlock3,")")
-                        print ("4: Chissled Stone           (12,000 Coins)   (",itemlock4,")")
-                        print ("5: Sharpened Rock           (16,000 Coins)   (",itemlock5,")")
+                        print ("1: Pebble                    (1000 Coins)    (",item_locks[0],")")
+                        print ("2: Stone                     (5000 Coins)    (",item_locks[1],")")
+                        print ("3: Rock                      (7500 Coins)    (",item_locks[2],")")
+                        print ("4: Chissled Stone           (12,000 Coins)   (",item_locks[3],")")
+                        print ("5: Sharpened Rock           (16,000 Coins)   (",item_locks[4],")")
                         print ("")
-                        print ("===============  Bronze Age   ================","(",agelock1,")")
-                        if agelock1 == ("UNLOCKED"):
+                        print ("===============  Bronze Age   ================","(",age_locks[0],")")
+                        if age_locks[0] == ("UNLOCKED"):
                             print ("")
-                            print ("6: Socketed Axe             (30,000 Coins)   (",itemlock6,")")
-                            print ("7: Dagger                   (45,000 Coins)   (",itemlock7,")")
-                            print ("8: Sickle Sword             (60,000 Coins)   (",itemlock8,")")
-                            print ("9: Reinforced Axe           (90,000 Coins)   (",itemlock9,")")
-                            print ("10: Dead Oak Bow            (120,000 Coins)  (",itemlock10,")")
+                            print ("6: Socketed Axe             (30,000 Coins)   (",item_locks[5],")")
+                            print ("7: Dagger                   (45,000 Coins)   (",item_locks[6],")")
+                            print ("8: Sickle Sword             (60,000 Coins)   (",item_locks[7],")")
+                            print ("9: Reinforced Axe           (90,000 Coins)   (",item_locks[8],")")
+                            print ("10: Dead Oak Bow            (120,000 Coins)  (",item_locks[9],")")
                         print ("")
-                        print ("===============   Iron Age    ================","(",agelock2,")")
-                        if agelock2 == ("UNLOCKED"):
+                        print ("===============   Iron Age    ================","(",age_locks[1],")")
+                        if age_locks[1] == ("UNLOCKED"):
                             print ("")
-                            print ("11: Iron Spear              (165,000 Coins)   (",itemlock11,")")
-                            print ("12: Steel Sword             (200,000 Coins)   (",itemlock12,")")
-                            print ("13: Lance                   (220,000 Coins)   (",itemlock13,")")
-                            print ("14: Axe                     (235,000 Coins)   (",itemlock14,")")
-                            print ("15: Bow                     (260,000 Coins)   (",itemlock15,")")
+                            print ("11: Iron Spear              (165,000 Coins)   (",item_locks[10],")")
+                            print ("12: Steel Sword             (200,000 Coins)   (",item_locks[11],")")
+                            print ("13: Lance                   (220,000 Coins)   (",item_locks[12],")")
+                            print ("14: Axe                     (235,000 Coins)   (",item_locks[13],")")
+                            print ("15: Bow                     (260,000 Coins)   (",item_locks[14],")")
                         print ("")
-                        print ("===============  Romans Age   ================","(",agelock3,")")
-                        if agelock3 == ("UNLOCKED"):
+                        print ("===============  Romans Age   ================","(",age_locks[2],")")
+                        if age_locks[2] == ("UNLOCKED"):
                             print ("")
-                            print ("16: Pugio                   (350,000 Coins)   (",itemlock16,")")
-                            print ("17: Gladius                 (385,000 Coins)   (",itemlock17,")")
-                            print ("18: Spatha                  (400,000 Coins)   (",itemlock18,")")
-                            print ("19: Javelin                 (435,000 Coins)   (",itemlock19,")")
-                            print ("20: Falx                    (495,000 Coins)   (",itemlock20,")")
+                            print ("16: Pugio                   (350,000 Coins)   (",item_locks[15],")")
+                            print ("17: Gladius                 (385,000 Coins)   (",item_locks[16],")")
+                            print ("18: Spatha                  (400,000 Coins)   (",item_locks[17],")")
+                            print ("19: Javelin                 (435,000 Coins)   (",item_locks[18],")")
+                            print ("20: Falx                    (495,000 Coins)   (",item_locks[19],")")
                         print ("")
-                        print ("==============   Medievil Age  ================","(",agelock4,")")
-                        if agelock4 == ("UNLOCKED"):
+                        print ("==============   Medievil Age  ================","(",age_locks[3],")")
+                        if age_locks[3] == ("UNLOCKED"):
                             print ("")
-                            print ("21: Lance                   (515,000 Coins)   (",itemlock21,")")
-                            print ("22: Mace                    (545,000 Coins)   (",itemlock22,")")
-                            print ("23: Crossbow                (600,000 Coins)   (",itemlock23,")")
-                            print ("24: Tribuchet               (630,000 Coins)   (",itemlock24,")")
-                            print ("25: Longbow                 (675,000 Coins)   (",itemlock25,")")
+                            print ("21: Lance                   (515,000 Coins)   (",item_locks[20],")")
+                            print ("22: Mace                    (545,000 Coins)   (",item_locks[21],")")
+                            print ("23: Crossbow                (600,000 Coins)   (",item_locks[22],")")
+                            print ("24: Tribuchet               (630,000 Coins)   (",item_locks[23],")")
+                            print ("25: Longbow                 (675,000 Coins)   (",item_locks[24],")")
                         print ("")
-                        print ("=============== Electric Age  ================","(",agelock5,")")
-                        if agelock5 == ("UNLOCKED"):
+                        print ("=============== Electric Age  ================","(",age_locks[4],")")
+                        if age_locks[4] == ("UNLOCKED"):
                             print ("")
-                            print ("26: Fire Lance              (735,000 Coins)   (",itemlock26,")")
-                            print ("27: Proto-gun               (795,000 Coins)   (",itemlock27,")")
-                            print ("28: Gattling Gun            (850,000 Coins)   (",itemlock28,")")
-                            print ("29: Flintlock               (900,000 Coins)   (",itemlock29,")")
-                            print ("30: Revolver                (975,000 Coins)   (",itemlock30,")")
+                            print ("26: Fire Lance              (735,000 Coins)   (",item_locks[25],")")
+                            print ("27: Proto-gun               (795,000 Coins)   (",item_locks[26],")")
+                            print ("28: Gattling Gun            (850,000 Coins)   (",item_locks[27],")")
+                            print ("29: Flintlock               (900,000 Coins)   (",item_locks[28],")")
+                            print ("30: Revolver                (975,000 Coins)   (",item_locks[29],")")
                         print ("")
-                        print ("===============  Modern Age   ================","(",agelock6,")")
-                        if agelock6 == ("UNLOCKED"):
+                        print ("===============  Modern Age   ================","(",age_locks[5],")")
+                        if age_locks[5] == ("UNLOCKED"):
                             print ("")
-                            print ("31: Glock                  (1,045,000 Coins)   (",itemlock31,")")
-                            print ("32: Uzi                    (1,100,000 Coins)   (",itemlock32,")")
-                            print ("33: Maxim Gun              (1,150,000 Coins)   (",itemlock33,")")
-                            print ("34: AK-47                  (1,200,000 Coins)   (",itemlock34,")")
-                            print ("35: M1 Garand              (1,300,000 Coins)   (",itemlock35,")")
+                            print ("31: Glock                  (1,045,000 Coins)   (",item_locks[30],")")
+                            print ("32: Uzi                    (1,100,000 Coins)   (",item_locks[31],")")
+                            print ("33: Maxim Gun              (1,150,000 Coins)   (",item_locks[32],")")
+                            print ("34: AK-47                  (1,200,000 Coins)   (",item_locks[33],")")
+                            print ("35: M1 Garand              (1,300,000 Coins)   (",item_locks[34],")")
                         print ("")
                         print ("============================================")
 #================================================= STONE ERA =====================================================
                         item = input("Number: ")
                         if item == ("1"):
-                            if itemlock1 == ("LOCKED"):
+                            if item_locks[0] == ("LOCKED"):
                                 print ("")
                                 print ("You have already purchased this item")
                                 print ("")
-                            elif itemlock1 == ("UNLOCKED"):
+                            elif item_locks[0] == ("UNLOCKED"):
                                 price = 1000
                                 filler()
                                 print ("========== Pebble ==========")
@@ -835,14 +780,14 @@ while loop == 1:
                                         maximumPlayerdamage = 15 + 2
                                         filler()
                                         currentSword = ("Pebble (+2 Damage)")
-                                        itemlock1 = ("LOCKED")
+                                        item_locks[0] = ("LOCKED")
 
                         if item == ("2"):
-                            if itemlock2 == ("LOCKED"):
+                            if item_locks[1] == ("LOCKED"):
                                 print ("")
                                 print ("You have already purchased this item")
                                 print ("")
-                            if itemlock2 == ("UNLOCKED"):
+                            if item_locks[1] == ("UNLOCKED"):
                                 price = 5000
                                 filler()
                                 print ("============ Stone =============")
@@ -866,15 +811,15 @@ while loop == 1:
                                         maximumPlayerdamage = 15 + 5
                                         filler()
                                         currentSword = ("Stone (+5 Damage)")
-                                        itemlock1 = ("LOCKED")
-                                        itemlock2 = ("LOCKED")
+                                        item_locks[0] = ("LOCKED")
+                                        item_locks[1] = ("LOCKED")
 
                         if item == ("3"):
-                            if itemlock3 == ("LOCKED"):
+                            if item_locks[2] == ("LOCKED"):
                                 print ("")
                                 print ("You have already purchased this item")
                                 print ("")
-                            if itemlock3 == ("UNLOCKED"):
+                            if item_locks[2] == ("UNLOCKED"):
                                 price = 7500
                                 filler()
                                 print ("=========== Rock ============")
@@ -898,16 +843,16 @@ while loop == 1:
                                         maximumPlayerdamage = 15 + 7
                                         filler()
                                         currentSword = ("Rock (+7 Damage)")
-                                        itemlock1 = ("LOCKED")
-                                        itemlock2 = ("LOCKED")
-                                        itemlock3 = ("LOCKED")
+                                        item_locks[0] = ("LOCKED")
+                                        item_locks[1] = ("LOCKED")
+                                        item_locks[2] = ("LOCKED")
 
                         if item == ("4"):
-                            if itemlock3 == ("LOCKED"):
+                            if item_locks[2] == ("LOCKED"):
                                 print ("")
                                 print ("You have already purchased this item")
                                 print ("")
-                            if itemlock3 == ("UNLOCKED"):
+                            if item_locks[2] == ("UNLOCKED"):
                                 price = 12000
                                 filler()
                                 print ("=========== Chissled Stone ============")
@@ -931,17 +876,17 @@ while loop == 1:
                                         maximumPlayerdamage = 15 + 12
                                         filler()
                                         currentSword = ("Chissled Stone (+12 Damage)")
-                                        itemlock1 = ("LOCKED")
-                                        itemlock2 = ("LOCKED")
-                                        itemlock3 = ("LOCKED")
-                                        itemlock4 = ("LOCKED")
+                                        item_locks[0] = ("LOCKED")
+                                        item_locks[1] = ("LOCKED")
+                                        item_locks[2] = ("LOCKED")
+                                        item_locks[3] = ("LOCKED")
 
                         if item == ("5"):
-                            if itemlock3 == ("LOCKED"):
+                            if item_locks[2] == ("LOCKED"):
                                 print ("")
                                 print ("You have already purchased this item")
                                 print ("")
-                            if itemlock3 == ("UNLOCKED"):
+                            if item_locks[2] == ("UNLOCKED"):
                                 price = 16000
                                 filler()
                                 print ("=========== Sharpened Rock ============")
@@ -965,20 +910,20 @@ while loop == 1:
                                         maximumPlayerdamage = 15 + 15
                                         filler()
                                         currentSword = ("Sharpened Rock (+15 Damage)")
-                                        itemlock1 = ("LOCKED")
-                                        itemlock2 = ("LOCKED")
-                                        itemlock3 = ("LOCKED")
-                                        itemlock4 = ("LOCKED")
-                                        itemlock5 = ("LOCKED")
+                                        item_locks[0] = ("LOCKED")
+                                        item_locks[1] = ("LOCKED")
+                                        item_locks[2] = ("LOCKED")
+                                        item_locks[3] = ("LOCKED")
+                                        item_locks[4] = ("LOCKED")
 
 #===================================================== BRONZE ERA ===================================================
                        
                         if item == ("6"):
-                            if itemlock6 == ("LOCKED"):
+                            if item_locks[5] == ("LOCKED"):
                                 print ("")
                                 print ("You have already purchased this item")
                                 print ("")
-                            elif itemlock6 == ("UNLOCKED"):
+                            elif item_locks[5] == ("UNLOCKED"):
                                 price = 30000
                                 filler()
                                 print ("========== Socketed Axe ==========")
@@ -1002,14 +947,14 @@ while loop == 1:
                                         maximumPlayerdamage = 15 + 17
                                         filler()
                                         currentSword = ("Socketed Axe (+17 Damage)")
-                                        itemlock6 = ("LOCKED")
+                                        item_locks[5] = ("LOCKED")
 
                         if item == ("7"):
-                            if itemlock7 == ("LOCKED"):
+                            if item_locks[6] == ("LOCKED"):
                                 print ("")
                                 print ("You have already purchased this item")
                                 print ("")
-                            if itemlock7 == ("UNLOCKED"):
+                            if item_locks[6] == ("UNLOCKED"):
                                 price = 45000
                                 filler()
                                 print ("============ Dagger =============")
@@ -1033,15 +978,15 @@ while loop == 1:
                                         maximumPlayerdamage = 15 + 20
                                         filler()
                                         currentSword = ("Dagger (+20 Damage)")
-                                        itemlock6 = ("LOCKED")
-                                        itemlock7 = ("LOCKED")
+                                        item_locks[5] = ("LOCKED")
+                                        item_locks[6] = ("LOCKED")
 
                         if item == ("8"):
-                            if itemlock8 == ("LOCKED"):
+                            if item_locks[7] == ("LOCKED"):
                                 print ("")
                                 print ("You have already purchased this item")
                                 print ("")
-                            if itemlock8 == ("UNLOCKED"):
+                            if item_locks[7] == ("UNLOCKED"):
                                 price = 60000
                                 filler()
                                 print ("=========== Sickle Sword ============")
@@ -1065,16 +1010,16 @@ while loop == 1:
                                         maximumPlayerdamage = 15 + 24
                                         filler()
                                         currentSword = ("Sickle Sword (+24 Damage)")
-                                        itemlock6 = ("LOCKED")
-                                        itemlock7 = ("LOCKED")
-                                        itemlock8 = ("LOCKED")
+                                        item_locks[5] = ("LOCKED")
+                                        item_locks[6] = ("LOCKED")
+                                        item_locks[7] = ("LOCKED")
 
                         if item == ("9"):
-                            if itemlock9 == ("LOCKED"):
+                            if item_locks[8] == ("LOCKED"):
                                 print ("")
                                 print ("You have already purchased this item")
                                 print ("")
-                            if itemlock9 == ("UNLOCKED"):
+                            if item_locks[8] == ("UNLOCKED"):
                                 price = 90000
                                 filler()
                                 print ("=========== Reinforced Axe ============")
@@ -1098,17 +1043,17 @@ while loop == 1:
                                         maximumPlayerdamage = 15 + 27
                                         filler()
                                         currentSword = ("Reinforced Axe (+27 Damage)")
-                                        itemlock6 = ("LOCKED")
-                                        itemlock7 = ("LOCKED")
-                                        itemlock8 = ("LOCKED")
-                                        itemlock9 = ("LOCKED")
+                                        item_locks[5] = ("LOCKED")
+                                        item_locks[6] = ("LOCKED")
+                                        item_locks[7] = ("LOCKED")
+                                        item_locks[8] = ("LOCKED")
 
                         if item == ("10"):
-                            if itemlock10 == ("LOCKED"):
+                            if item_locks[9] == ("LOCKED"):
                                 print ("")
                                 print ("You have already purchased this item")
                                 print ("")
-                            if itemlock10 == ("UNLOCKED"):
+                            if item_locks[9] == ("UNLOCKED"):
                                 price = 120000
                                 filler()
                                 print ("=========== Dead Oak Bow ==============")
@@ -1132,20 +1077,20 @@ while loop == 1:
                                         maximumPlayerdamage = 15 + 30
                                         filler()
                                         currentSword = ("Dead Oak Bow (+30 Damage)")
-                                        itemlock6 = ("LOCKED")
-                                        itemlock7 = ("LOCKED")
-                                        itemlock8 = ("LOCKED")
-                                        itemlock9 = ("LOCKED")
-                                        itemlock10 = ("LOCKED")
+                                        item_locks[5] = ("LOCKED")
+                                        item_locks[6] = ("LOCKED")
+                                        item_locks[7] = ("LOCKED")
+                                        item_locks[8] = ("LOCKED")
+                                        item_locks[9] = ("LOCKED")
                         
 #===================================================== IRON ERA ===================================================
 
                     if item == ("11"):
-                        if itemlock11 == ("LOCKED"):
+                        if item_locks[10] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock11 == ("UNLOCKED"):
+                        if item_locks[10] == ("UNLOCKED"):
                             price = 165000
                             filler()
                             print ("============ Iron Spear  ==============")
@@ -1169,14 +1114,14 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 34
                                     filler()
                                     currentSword = ("Iron Spear (+34 Damage)")
-                                    itemlock11 = ("LOCKED")
+                                    item_locks[10] = ("LOCKED")
 
                     if item == ("12"):
-                        if itemlock12 == ("LOCKED"):
+                        if item_locks[11] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock12 == ("UNLOCKED"):
+                        if item_locks[11] == ("UNLOCKED"):
                             price = 200000
                             filler()
                             print ("============ Steel Sword ==============")
@@ -1200,15 +1145,15 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 38
                                     filler()
                                     currentSword = ("Steel Sword (+38 Damage)")
-                                    itemlock11 = ("LOCKED")
-                                    itemlock12 = ("LOCKED")
+                                    item_locks[10] = ("LOCKED")
+                                    item_locks[11] = ("LOCKED")
 
                     if item == ("13"):
-                        if itemlock13 == ("LOCKED"):
+                        if item_locks[12] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock13 == ("UNLOCKED"):
+                        if item_locks[12] == ("UNLOCKED"):
                             price = 220000
                             filler()
                             print ("=============   Lance   ===============")
@@ -1232,16 +1177,16 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 42
                                     filler()
                                     currentSword = ("Lance (+42 Damage)")
-                                    itemlock11 = ("LOCKED")
-                                    itemlock12 = ("LOCKED")
-                                    itemlock13 = ("LOCKED")
+                                    item_locks[10] = ("LOCKED")
+                                    item_locks[11] = ("LOCKED")
+                                    item_locks[12] = ("LOCKED")
 
                     if item == ("14"):
-                        if itemlock14 == ("LOCKED"):
+                        if item_locks[13] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock14 == ("UNLOCKED"):
+                        if item_locks[13] == ("UNLOCKED"):
                             price = 235000
                             filler()
                             print ("==============   Axe   ================")
@@ -1265,17 +1210,17 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 46
                                     filler()
                                     currentSword = ("Axe (+46 Damage)")
-                                    itemlock11 = ("LOCKED")
-                                    itemlock12 = ("LOCKED")
-                                    itemlock13 = ("LOCKED")
-                                    itemlock14 = ("LOCKED")
+                                    item_locks[10] = ("LOCKED")
+                                    item_locks[11] = ("LOCKED")
+                                    item_locks[12] = ("LOCKED")
+                                    item_locks[13] = ("LOCKED")
 
                     if item == ("15"):
-                        if itemlock15 == ("LOCKED"):
+                        if item_locks[14] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock15 == ("UNLOCKED"):
+                        if item_locks[14] == ("UNLOCKED"):
                             price = 260000
                             filler()
                             print ("==============   Bow   ================")
@@ -1299,20 +1244,20 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 50
                                     filler()
                                     currentSword = ("Bow (+50 Damage)")
-                                    itemlock11 = ("LOCKED")
-                                    itemlock12 = ("LOCKED")
-                                    itemlock13 = ("LOCKED")
-                                    itemlock14 = ("LOCKED")
-                                    itemlock15 = ("LOCKED")
+                                    item_locks[10] = ("LOCKED")
+                                    item_locks[11] = ("LOCKED")
+                                    item_locks[12] = ("LOCKED")
+                                    item_locks[13] = ("LOCKED")
+                                    item_locks[14] = ("LOCKED")
 
 #===================================================== ROMAN ERA ===================================================
 
                     if item == ("16"):
-                        if itemlock16 == ("LOCKED"):
+                        if item_locks[15] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock16 == ("UNLOCKED"):
+                        if item_locks[15] == ("UNLOCKED"):
                             price = 350000
                             filler()
                             print ("==============  Pugio  ================")
@@ -1336,14 +1281,14 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 54
                                     filler()
                                     currentSword = ("Pugio (+54 Damage)")
-                                    itemlock16 = ("LOCKED")
+                                    item_locks[15] = ("LOCKED")
 
                     if item == ("17"):
-                        if itemlock17 == ("LOCKED"):
+                        if item_locks[16] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock17 == ("UNLOCKED"):
+                        if item_locks[16] == ("UNLOCKED"):
                             price = 385000
                             filler()
                             print ("=============  Gladius  ===============")
@@ -1367,15 +1312,15 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 58
                                     filler()
                                     currentSword = ("Gladius (+58 Damage)")
-                                    itemlock16 = ("LOCKED")
-                                    itemlock17 = ("LOCKED")
+                                    item_locks[15] = ("LOCKED")
+                                    item_locks[16] = ("LOCKED")
 
                     if item == ("18"):
-                        if itemlock18 == ("LOCKED"):
+                        if item_locks[17] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock18 == ("UNLOCKED"):
+                        if item_locks[17] == ("UNLOCKED"):
                             price = 400000
                             filler()
                             print ("=============   Spatha  ===============")
@@ -1399,16 +1344,16 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 62
                                     filler()
                                     currentSword = ("Spatha (+62 Damage)")
-                                    itemlock16 = ("LOCKED")
-                                    itemlock17 = ("LOCKED")
-                                    itemlock18 = ("LOCKED")
+                                    item_locks[15] = ("LOCKED")
+                                    item_locks[16] = ("LOCKED")
+                                    item_locks[17] = ("LOCKED")
 
                     if item == ("19"):
-                        if itemlock19 == ("LOCKED"):
+                        if item_locks[18] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock19 == ("UNLOCKED"):
+                        if item_locks[18] == ("UNLOCKED"):
                             price = 435000
                             filler()
                             print ("=============  Javelin  ===============")
@@ -1432,17 +1377,17 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 66
                                     filler()
                                     currentSword = ("Javelin (+66 Damage)")
-                                    itemlock16 = ("LOCKED")
-                                    itemlock17 = ("LOCKED")
-                                    itemlock18 = ("LOCKED")
-                                    itemlock19 = ("LOCKED")
+                                    item_locks[15] = ("LOCKED")
+                                    item_locks[16] = ("LOCKED")
+                                    item_locks[17] = ("LOCKED")
+                                    item_locks[18] = ("LOCKED")
 
                     if item == ("20"):
-                        if itemlock20 == ("LOCKED"):
+                        if item_locks[19] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock20 == ("UNLOCKED"):
+                        if item_locks[19] == ("UNLOCKED"):
                             price = 495000
                             filler()
                             print ("==============   Falx  ================")
@@ -1466,20 +1411,20 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 70
                                     filler()
                                     currentSword = ("Falx (+70 Damage)")
-                                    itemlock16 = ("LOCKED")
-                                    itemlock17 = ("LOCKED")
-                                    itemlock18 = ("LOCKED")
-                                    itemlock19 = ("LOCKED")
-                                    itemlock20 = ("LOCKED")
+                                    item_locks[15] = ("LOCKED")
+                                    item_locks[16] = ("LOCKED")
+                                    item_locks[17] = ("LOCKED")
+                                    item_locks[18] = ("LOCKED")
+                                    item_locks[19] = ("LOCKED")
 
 # ==================================================== MEDIEVIL AGE ===================================================
 
                     if item == ("21"):
-                        if itemlock21 == ("LOCKED"):
+                        if item_locks[20] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock21 == ("UNLOCKED"):
+                        if item_locks[20] == ("UNLOCKED"):
                             price = 515000
                             filler()
                             print ("================ Lance ================")
@@ -1503,14 +1448,14 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 74
                                     filler()
                                     currentSword = ("Lance (+74 Damage)")
-                                    itemlock21 = ("LOCKED")
+                                    item_locks[20] = ("LOCKED")
 
                     if item == ("22"):
-                        if itemlock22 == ("LOCKED"):
+                        if item_locks[21] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock22 == ("UNLOCKED"):
+                        if item_locks[21] == ("UNLOCKED"):
                             price = 545000
                             filler()
                             print ("================  Mace ================")
@@ -1534,15 +1479,15 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 78
                                     filler()
                                     currentSword = ("Mace (+78 Damage)")
-                                    itemlock21 = ("LOCKED")
-                                    itemlock22 = ("LOCKED")
+                                    item_locks[20] = ("LOCKED")
+                                    item_locks[21] = ("LOCKED")
 
                     if item == ("23"):
-                        if itemlock23 == ("LOCKED"):
+                        if item_locks[22] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock23 == ("UNLOCKED"):
+                        if item_locks[22] == ("UNLOCKED"):
                             price = 600000
                             filler()
                             print ("=============== Crossbow ==============")
@@ -1566,16 +1511,16 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 82
                                     filler()
                                     currentSword = ("Crossbow (+82 Damage)")
-                                    itemlock21 = ("LOCKED")
-                                    itemlock22 = ("LOCKED")
-                                    itemlock23 = ("LOCKED")
+                                    item_locks[20] = ("LOCKED")
+                                    item_locks[21] = ("LOCKED")
+                                    item_locks[22] = ("LOCKED")
 
                     if item == ("24"):
-                        if itemlock24 == ("LOCKED"):
+                        if item_locks[23] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock24 == ("UNLOCKED"):
+                        if item_locks[23] == ("UNLOCKED"):
                             price = 630000
                             filler()
                             print ("==============  Tribuchet =============")
@@ -1599,17 +1544,17 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 84
                                     filler()
                                     currentSword = ("Tribuchet (+84 Damage)")
-                                    itemlock21 = ("LOCKED")
-                                    itemlock22 = ("LOCKED")
-                                    itemlock23 = ("LOCKED")
-                                    itemlock24 = ("LOCKED")
+                                    item_locks[20] = ("LOCKED")
+                                    item_locks[21] = ("LOCKED")
+                                    item_locks[22] = ("LOCKED")
+                                    item_locks[23] = ("LOCKED")
 
                     if item == ("25"):
-                        if itemlock25 == ("LOCKED"):
+                        if item_locks[24] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock25 == ("UNLOCKED"):
+                        if item_locks[24] == ("UNLOCKED"):
                             price = 675000
                             filler()
                             print ("===============  Longbow ==============")
@@ -1633,20 +1578,20 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 86
                                     filler()
                                     currentSword = ("Longbow (+86 Damage)")
-                                    itemlock21 = ("LOCKED")
-                                    itemlock22 = ("LOCKED")
-                                    itemlock23 = ("LOCKED")
-                                    itemlock24 = ("LOCKED")
-                                    itemlock25 = ("LOCKED")
+                                    item_locks[20] = ("LOCKED")
+                                    item_locks[21] = ("LOCKED")
+                                    item_locks[22] = ("LOCKED")
+                                    item_locks[23] = ("LOCKED")
+                                    item_locks[24] = ("LOCKED")
 
 # ========================================================= ELECTRIC AGE ===================================================
 
                     if item == ("26"):
-                        if itemlock26 == ("LOCKED"):
+                        if item_locks[25] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock26 == ("UNLOCKED"):
+                        if item_locks[25] == ("UNLOCKED"):
                             price = 735000
                             filler()
                             print ("==============  Fire Lance ============")
@@ -1670,14 +1615,14 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 88
                                     filler()
                                     currentSword = ("Fire Lance (+88 Damage)")
-                                    itemlock26 = ("LOCKED")
+                                    item_locks[25] = ("LOCKED")
 
                     if item == ("27"):
-                        if itemlock27 == ("LOCKED"):
+                        if item_locks[26] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock27 == ("UNLOCKED"):
+                        if item_locks[26] == ("UNLOCKED"):
                             price = 795000
                             filler()
                             print ("==============  Proto-gun =============")
@@ -1701,15 +1646,15 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 90
                                     filler()
                                     currentSword = ("Proto-gun (+90 Damage)")
-                                    itemlock26 = ("LOCKED")
-                                    itemlock27 = ("LOCKED")
+                                    item_locks[25] = ("LOCKED")
+                                    item_locks[26] = ("LOCKED")
 
                     if item == ("28"):
-                        if itemlock28 == ("LOCKED"):
+                        if item_locks[27] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock28 == ("UNLOCKED"):
+                        if item_locks[27] == ("UNLOCKED"):
                             price = 850000
                             filler()
                             print ("============= Gattling Gun ============")
@@ -1733,16 +1678,16 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 92
                                     filler()
                                     currentSword = ("Gattling Gun (+92 Damage)")
-                                    itemlock26 = ("LOCKED")
-                                    itemlock27 = ("LOCKED")
-                                    itemlock28 = ("LOCKED")
+                                    item_locks[25] = ("LOCKED")
+                                    item_locks[26] = ("LOCKED")
+                                    item_locks[27] = ("LOCKED")
 
                     if item == ("29"):
-                        if itemlock29 == ("LOCKED"):
+                        if item_locks[28] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock29 == ("UNLOCKED"):
+                        if item_locks[28] == ("UNLOCKED"):
                             price = 900000
                             filler()
                             print ("============== Flintlock ==============")
@@ -1766,17 +1711,17 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 94
                                     filler()
                                     currentSword = ("Flintlock (+94 Damage)")
-                                    itemlock26 = ("LOCKED")
-                                    itemlock27 = ("LOCKED")
-                                    itemlock28 = ("LOCKED")
-                                    itemlock29 = ("LOCKED")
+                                    item_locks[25] = ("LOCKED")
+                                    item_locks[26] = ("LOCKED")
+                                    item_locks[27] = ("LOCKED")
+                                    item_locks[28] = ("LOCKED")
 
                     if item == ("30"):
-                        if itemlock30 == ("LOCKED"):
+                        if item_locks[29] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock30 == ("UNLOCKED"):
+                        if item_locks[29] == ("UNLOCKED"):
                             price = 975000
                             filler()
                             print ("==============  Revolver ==============")
@@ -1800,18 +1745,18 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 96
                                     filler()
                                     currentSword = ("Revolver (+96 Damage)")
-                                    itemlock26 = ("LOCKED")
-                                    itemlock27 = ("LOCKED")
-                                    itemlock28 = ("LOCKED")
-                                    itemlock29 = ("LOCKED")
-                                    itemlock30 = ("LOCKED")
+                                    item_locks[25] = ("LOCKED")
+                                    item_locks[26] = ("LOCKED")
+                                    item_locks[27] = ("LOCKED")
+                                    item_locks[28] = ("LOCKED")
+                                    item_locks[29] = ("LOCKED")
 
                     if item == ("31"):
-                        if itemlock31 == ("LOCKED"):
+                        if item_locks[30] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock31 == ("UNLOCKED"):
+                        if item_locks[30] == ("UNLOCKED"):
                             price = 1045000
                             filler()
                             print ("===============  Glock  ===============")
@@ -1835,14 +1780,14 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 98
                                     filler()
                                     currentSword = ("Glock (+98 Damage)")
-                                    itemlock31 = ("LOCKED")
+                                    item_locks[30] = ("LOCKED")
 
                     if item == ("32"):
-                        if itemlock32 == ("LOCKED"):
+                        if item_locks[31] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock32 == ("UNLOCKED"):
+                        if item_locks[31] == ("UNLOCKED"):
                             price = 1100000
                             filler()
                             print ("===============   Uzi   ===============")
@@ -1866,15 +1811,15 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 100
                                     filler()
                                     currentSword = ("Uzi (+100 Damage)")
-                                    itemlock31 = ("LOCKED")
-                                    itemlock32 = ("LOCKED")
+                                    item_locks[30] = ("LOCKED")
+                                    item_locks[31] = ("LOCKED")
 
                     if item == ("33"):
-                        if itemlock33 == ("LOCKED"):
+                        if item_locks[32] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock33 == ("UNLOCKED"):
+                        if item_locks[32] == ("UNLOCKED"):
                             price = 1150000
                             filler()
                             print ("============== Maxim Gun ==============")
@@ -1898,16 +1843,16 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 102
                                     filler()
                                     currentSword = ("Maxin Gun (+102 Damage)")
-                                    itemlock31 = ("LOCKED")
-                                    itemlock32 = ("LOCKED")
-                                    itemlock33 = ("LOCKED")
+                                    item_locks[30] = ("LOCKED")
+                                    item_locks[31] = ("LOCKED")
+                                    item_locks[32] = ("LOCKED")
 
                     if item == ("34"):
-                        if itemlock34 == ("LOCKED"):
+                        if item_locks[33] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock34 == ("UNLOCKED"):
+                        if item_locks[33] == ("UNLOCKED"):
                             price = 1200000
                             filler()
                             print ("===============  AK-47  ===============")
@@ -1931,17 +1876,17 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 104
                                     filler()
                                     currentSword = ("AK-47 (+104 Damage)")
-                                    itemlock31 = ("LOCKED")
-                                    itemlock32 = ("LOCKED")
-                                    itemlock33 = ("LOCKED")
-                                    itemlock34 = ("LOCKED")
+                                    item_locks[30] = ("LOCKED")
+                                    item_locks[31] = ("LOCKED")
+                                    item_locks[32] = ("LOCKED")
+                                    item_locks[33] = ("LOCKED")
 
                     if item == ("35"):
-                        if itemlock35 == ("LOCKED"):
+                        if item_locks[34] == ("LOCKED"):
                             print ("")
                             print ("You have already purchased this item")
                             print ("")
-                        if itemlock35 == ("UNLOCKED"):
+                        if item_locks[34] == ("UNLOCKED"):
                             price = 1300000
                             filler()
                             print ("============== M1 Garand ==============")
@@ -1965,11 +1910,11 @@ while loop == 1:
                                     maximumPlayerdamage = 15 + 106
                                     filler()
                                     currentSword = ("M1 Garand (+106 Damage)")
-                                    itemlock31 = ("LOCKED")
-                                    itemlock32 = ("LOCKED")
-                                    itemlock33 = ("LOCKED")
-                                    itemlock34 = ("LOCKED")
-                                    itemlock35 = ("LOCKED")
+                                    item_locks[30] = ("LOCKED")
+                                    item_locks[31] = ("LOCKED")
+                                    item_locks[32] = ("LOCKED")
+                                    item_locks[33] = ("LOCKED")
+                                    item_locks[34] = ("LOCKED")
                                     
                     if spage == ("exit"):
                             print ("You have closed the shop")
@@ -2290,57 +2235,7 @@ while loop == 1:
             filler2()
             print ("Saving...")
             filler()
-            pickle.dump(money, open('money.dat',"wb"))
-            pickle.dump(exmoney, open('exmoney.dat',"wb"))
-            pickle.dump(day, open('day.dat',"wb"))
-            pickle.dump(happiness, open('happiness.dat',"wb"))
-            pickle.dump(people, open('people.dat',"wb"))
-            pickle.dump(maxpeople, open('maxpeople.dat',"wb"))
-            pickle.dump(hpotion, open('hpotion.dat',"wb"))
-            pickle.dump(bread, open('bread.dat',"wb"))
-            pickle.dump(maximumPlayerdamage, open('maximumPlayerdamage.dat',"wb"))
-            pickle.dump(minimumPlayerdamage, open('minimumPlayerdamage.dat',"wb"))
-            pickle.dump(wfight, open('wfight.dat',"wb"))
-            pickle.dump(lfight, open('lfight.dat',"wb"))
-            pickle.dump(currentSword, open('currentSword.dat',"wb"))
-            pickle.dump(itemlock1, open('itemlock1.dat',"wb"))
-            pickle.dump(itemlock2, open('itemlock2.dat',"wb"))
-            pickle.dump(itemlock3, open('itemlock3.dat',"wb"))
-            pickle.dump(itemlock4, open('itemlock4.dat',"wb"))
-            pickle.dump(itemlock5, open('itemlock5.dat',"wb"))
-            pickle.dump(itemlock6, open('itemlock6.dat',"wb"))
-            pickle.dump(itemlock7, open('itemlock7.dat',"wb"))
-            pickle.dump(itemlock8, open('itemlock8.dat',"wb"))
-            pickle.dump(itemlock8, open('itemlock9.dat',"wb"))
-            pickle.dump(itemlock10, open('itemlock10.dat',"wb"))
-            pickle.dump(itemlock11, open('itemlock11.dat',"wb"))
-            pickle.dump(itemlock12, open('itemlock12.dat',"wb"))
-            pickle.dump(itemlock13, open('itemlock13.dat',"wb"))
-            pickle.dump(itemlock14, open('itemlock14.dat',"wb"))
-            pickle.dump(itemlock15, open('itemlock15.dat',"wb"))
-            pickle.dump(itemlock16, open('itemlock16.dat',"wb"))
-            pickle.dump(itemlock17, open('itemlock17.dat',"wb"))
-            pickle.dump(itemlock18, open('itemlock18.dat',"wb"))
-            pickle.dump(itemlock19, open('itemlock19.dat',"wb"))
-            pickle.dump(itemlock20, open('itemlock20.dat',"wb"))
-            pickle.dump(itemlock21, open('itemlock21.dat',"wb"))
-            pickle.dump(itemlock22, open('itemlock22.dat',"wb"))
-            pickle.dump(itemlock23, open('itemlock23.dat',"wb"))
-            pickle.dump(itemlock24, open('itemlock24.dat',"wb"))
-            pickle.dump(itemlock25, open('itemlock25.dat',"wb"))
-            pickle.dump(itemlock26, open('itemlock26.dat',"wb"))
-            pickle.dump(itemlock27, open('itemlock27.dat',"wb"))
-            pickle.dump(itemlock28, open('itemlock28.dat',"wb"))
-            pickle.dump(itemlock29, open('itemlock29.dat',"wb"))
-            pickle.dump(itemlock30, open('itemlock30.dat',"wb"))
-            pickle.dump(itemlock31, open('itemlock31.dat',"wb"))
-            pickle.dump(itemlock32, open('itemlock32.dat',"wb"))
-            pickle.dump(itemlock33, open('itemlock33.dat',"wb"))
-            pickle.dump(itemlock34, open('itemlock34.dat',"wb"))
-            pickle.dump(itemlock35, open('itemlock35.dat',"wb"))
-            pickle.dump(name, open('name.dat',"wb"))
-            pickle.dump(currentEra, open('currentEra.dat',"wb"))
-            pickle.dump(number, open('number.dat',"wb"))
+            save_game_state()
 
             time.sleep(1)
             filler2()
@@ -2401,57 +2296,7 @@ while loop == 1:
                 print ("Saving all current progress")
                 filler()
                 time.sleep(2)
-                pickle.dump(money, open('money.dat',"wb"))
-                pickle.dump(exmoney, open('exmoney.dat',"wb"))
-                pickle.dump(day, open('day.dat',"wb"))
-                pickle.dump(happiness, open('happiness.dat',"wb"))
-                pickle.dump(people, open('people.dat',"wb"))
-                pickle.dump(maxpeople, open('maxpeople.dat',"wb"))
-                pickle.dump(hpotion, open('hpotion.dat',"wb"))
-                pickle.dump(bread, open('bread.dat',"wb"))
-                pickle.dump(maximumPlayerdamage, open('maximumPlayerdamage.dat',"wb"))
-                pickle.dump(minimumPlayerdamage, open('minimumPlayerdamage.dat',"wb"))
-                pickle.dump(wfight, open('wfight.dat',"wb"))
-                pickle.dump(lfight, open('lfight.dat',"wb"))
-                pickle.dump(currentSword, open('currentSword.dat',"wb"))
-                pickle.dump(itemlock1, open('itemlock1.dat',"wb"))
-                pickle.dump(itemlock2, open('itemlock2.dat',"wb"))
-                pickle.dump(itemlock3, open('itemlock3.dat',"wb"))
-                pickle.dump(itemlock4, open('itemlock4.dat',"wb"))
-                pickle.dump(itemlock5, open('itemlock5.dat',"wb"))
-                pickle.dump(itemlock6, open('itemlock6.dat',"wb"))
-                pickle.dump(itemlock7, open('itemlock7.dat',"wb"))
-                pickle.dump(itemlock8, open('itemlock8.dat',"wb"))
-                pickle.dump(itemlock8, open('itemlock9.dat',"wb"))
-                pickle.dump(itemlock10, open('itemlock10.dat',"wb"))
-                pickle.dump(itemlock11, open('itemlock11.dat',"wb"))
-                pickle.dump(itemlock12, open('itemlock12.dat',"wb"))
-                pickle.dump(itemlock13, open('itemlock13.dat',"wb"))
-                pickle.dump(itemlock14, open('itemlock14.dat',"wb"))
-                pickle.dump(itemlock15, open('itemlock15.dat',"wb"))
-                pickle.dump(itemlock16, open('itemlock16.dat',"wb"))
-                pickle.dump(itemlock17, open('itemlock17.dat',"wb"))
-                pickle.dump(itemlock18, open('itemlock18.dat',"wb"))
-                pickle.dump(itemlock19, open('itemlock19.dat',"wb"))
-                pickle.dump(itemlock20, open('itemlock20.dat',"wb"))
-                pickle.dump(itemlock21, open('itemlock21.dat',"wb"))
-                pickle.dump(itemlock22, open('itemlock22.dat',"wb"))
-                pickle.dump(itemlock23, open('itemlock23.dat',"wb"))
-                pickle.dump(itemlock24, open('itemlock24.dat',"wb"))
-                pickle.dump(itemlock25, open('itemlock25.dat',"wb"))
-                pickle.dump(itemlock26, open('itemlock26.dat',"wb"))
-                pickle.dump(itemlock27, open('itemlock27.dat',"wb"))
-                pickle.dump(itemlock28, open('itemlock28.dat',"wb"))
-                pickle.dump(itemlock29, open('itemlock29.dat',"wb"))
-                pickle.dump(itemlock30, open('itemlock30.dat',"wb"))
-                pickle.dump(itemlock31, open('itemlock31.dat',"wb"))
-                pickle.dump(itemlock32, open('itemlock32.dat',"wb"))
-                pickle.dump(itemlock33, open('itemlock33.dat',"wb"))
-                pickle.dump(itemlock34, open('itemlock34.dat',"wb"))
-                pickle.dump(itemlock35, open('itemlock35.dat',"wb"))
-                pickle.dump(name, open('name.dat',"wb"))
-                pickle.dump(currentEra, open('currentEra.dat',"wb"))
-                pickle.dump(number, open('number.dat',"wb"))
+                save_game_state()
                 play = ("menu")
                 break
 
