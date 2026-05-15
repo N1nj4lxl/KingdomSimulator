@@ -400,16 +400,11 @@ def modes():
     print ("")
     print ("============= Modes =============")
     print ("                                |")
-    print ("1: Easy                         |")
-    print ("                                |")
-    print ("2: Medium                       |")
-    print ("                                |")
-    print ("3: Hard                         |")
-    print ("                                |")
-    print ("======== Type the number ========")
     print (EASY_ART)
     print (MEDIUM_ART)
     print (HARD_ART)
+    print ("                                |")
+    print ("======== Type the number ========")
     print ("")
 
 
