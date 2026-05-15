@@ -257,6 +257,31 @@ def show_weapons_and_buy():
     currentSword = f"{name} (+{dmg} Damage)"
     print(f"You have successfully purchased 1 {name}!")
 
+KINGDOM_SIMULATOR_ART = r"""
+ _   ___                 _                   _____ _                 _       _
+| | / (_)               | |                 /  ___(_)               | |     | |
+| |/ / _ _ __   __ _  __| | ___  _ __ ___   \ `--. _ _ __ ___  _   _| | __ _| |_ ___  _ __
+|    \| | '_ \ / _` |/ _` |/ _ \| '_ ` _ \   `--. \ | '_ ` _ \| | | | |/ _` | __/ _ \| '__|
+| |\  \ | | | | (_| | (_| | (_) | | | | | | /\__/ / | | | | | | |_| | | (_| | || (_) | |
+\_| \_/_|_| |_|\__, |\__,_|\___/|_| |_| |_| \____/|_|_| |_| |_|\__,_|_|\__,_|\__\___/|_|
+                  __/ |
+                 |___/
+"""
+
+ENEMY_ART = r"""
+ ____  __ _  ____  _  _  _  _
+(  __)(  ( \(  __)( \/ )( \/ )
+ ) _) /    / ) _) / \/ \ )  /
+(____)\_)__)(____)\_)(_/(__/
+"""
+
+YOU_ART = r"""
+ _  _  __   _  _
+( \/ )/  \ / )( \
+ )  /(  O )) \/ (
+(__/  \__/ \____/
+"""
+
 #============================================== DISPLAY FUNCTIONS =================================================
 def data():
     print ("Type [cmds] in the command box for list of commands")
@@ -293,23 +318,13 @@ def data():
     print (log5)
     filler()
 
- ____  __ _  ____  _  _  _  _ 
-(  __)(  ( \(  __)( \/ )( \/ )
- ) _) /    / ) _) / \/ \ )  / 
-(____)\_)__)(____)\_)(_/(__/  
-
- _  _  __   _  _ 
-( \/ )/  \ / )( \
- )  /(  O )) \/ (
-(__/  \__/ \____/
 
 def stats():
     print ("=========== INFO ===========")
-    print ("")
-    print ("Your Health:    ",phealth)
-    print ("")
+    print(ENEMY_ART)
     print ("Enemys Health:  ",ehealth)
-    print ("")
+    print(YOU_ART)
+    print ("Your Health:    ",phealth)
     print ("============================")
     print ("")
 
@@ -380,14 +395,7 @@ while loop == 1:
             filler2()
             time.sleep(1)
             print ("")
-            print (" _   ___                 _                   _____ _                 _       _             
-                    | | / (_)               | |                 /  ___(_)               | |     | |            
-                    | |/ / _ _ __   __ _  __| | ___  _ __ ___   \ `--. _ _ __ ___  _   _| | __ _| |_ ___  _ __ 
-                    |    \| | '_ \ / _` |/ _` |/ _ \| '_ ` _ \   `--. \ | '_ ` _ \| | | | |/ _` | __/ _ \| '__|
-                    | |\  \ | | | | (_| | (_| | (_) | | | | | | /\__/ / | | | | | | |_| | | (_| | || (_) | |   
-                    \_| \_/_|_| |_|\__, |\__,_|\___/|_| |_| |_| \____/|_|_| |_| |_|\__,_|_|\__,_|\__\___/|_|   
-                                    __/ |                                                                      
-                                   |___/                                                                       ")
+            print(KINGDOM_SIMULATOR_ART)
             print ("Welcome to Kingdom Simulator! Here you will have to manage your own kingdom by expanding your population, fighting for coins, buying items, and MORE!")
             print ("")
             time.sleep(1)
