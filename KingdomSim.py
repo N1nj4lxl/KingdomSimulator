@@ -282,83 +282,61 @@ YOU_ART = r"""
 (__/  \__/ \____/
 """
 
- ____   __   ____  _  _           
-(  __) / _\ / ___)( \/ )          
- ) _) /    \\___ \ )  /           
-(____)\_/\_/(____/(__/            
- _  _  ____  ____  __  _  _  _  _ 
+EASY_ART = r"""
+ ____   __   ____  _  _
+(  __) / _\ / ___)( \/ )
+ ) _) /    \\___ \ )  /
+(____)\_/\_/(____/(__/
+"""
+
+MEDIUM_ART = r"""
+ _  _  ____  ____  __  _  _  _  _
 ( \/ )(  __)(    \(  )/ )( \( \/ )
 / \/ \ ) _)  ) D ( )( ) \/ (/ \/ \
-\_)(_/(____)(____/(__)\____/\_)(_/
- _  _   __   ____  ____           
-/ )( \ / _\ (  _ \(    \          
-) __ (/    \ )   / ) D (          
-\_)(_/\_/\_/(__\_)(____/          
+\_)(_/(____)(____/(__)\____/\_)(_) 
+"""
 
-                                     
- _____ _____ _____ _____ _____ _____ 
-|   __|_   _| __  |     |  |  |   __|
-|__   | | | |    -|-   -|    -|   __|
-|_____| |_| |__|__|_____|__|__|_____|
-                                     
-                                     
- _____ __    _____ _____ _____       
-| __  |  |  |     |     |  |  |      
-| __ -|  |__|  |  |   --|    -|      
-|_____|_____|_____|_____|__|__|      
-                                     
-                                     
- _____ _____ _____ __                
-|  |  |   __|  _  |  |               
-|     |   __|     |  |__             
-|__|__|_____|__|__|_____|            
-                                     
- ___   
-/ _ \  
-))_((  
-\___/  
-  _    
-/_ (   
- ) |   
-/__(   
- ___   
-/__ (  
- ( /   
-/___\  
- ___   
-(__ \  
- (_ |  
-(___/  
- _  _  
-) () ( 
- \_  | 
-   )_( 
-  ___  
- ) __\ 
- '- )  
- )___\ 
- _     
-) |_   
-| ( \  
-\___/  
- ___   
-\_  (  
-  / |  
-  )_(  
- ___   
-/ _ \  
-) _ (  
-\___/  
- ___   
-/ _ \  
-`-_((  
-  )_/  
-   _   
- _/ (_ 
-)_   _(
-  )_/  
- _____ 
-)_____(     
+HARD_ART = r"""
+ _  _   __   ____  ____
+/ )( \ / _\ (  _ \(    \
+) __ (/    \ )   / ) D (
+\_)(_/\_/\_/(__\_)(____/
+"""
+
+ASCII_DIGITS = {
+    "0": [" ___ ", "/ _ \\", ") _ (", "\\___/"],
+    "1": ["  _  ", "/_ ( ", " ) | ", "/__( "],
+    "2": [" ___ ", "/__ (", " ( / ", "/___\\"],
+    "3": [" ___ ", "(__ \\", " (_ |", "(___/"],
+    "4": [" _  _", ") () (", " \\_  |", "   )_("],
+    "5": ["  ___ ", " ) __\\", " '- ) ", " )___\\"],
+    "6": [" _    ", ") |_  ", "| ( \\ ", "\\___/ "],
+    "7": [" ___ ", "\\_  (", "  / |", "  )_("],
+    "8": [" ___ ", "/ _ \\", ") _ (", "\\___/"],
+    "9": [" ___ ", "/ _ \\", "`-_ ((", "  )_/"],
+}
+
+ASCII_PLUS = [" _   _ ", "| | | |", "| |_| |", " \\___/ "]
+ASCII_MINUS = [" _____ ", ")_____(", "       ", "       "]
+
+def render_ascii_number(value, show_sign=False):
+    text = str(abs(int(value)))
+    rows = [""] * 4
+    for char in text:
+        digit = ASCII_DIGITS.get(char, ASCII_DIGITS["0"])
+        for i in range(4):
+            rows[i] += digit[i] + "  "
+    if show_sign:
+        sign_art = ASCII_PLUS if value >= 0 else ASCII_MINUS
+        for i in range(4):
+            rows[i] = sign_art[i] + "   " + rows[i]
+    return "\n".join(rows)
+
+def show_damage_exchange(player_damage, enemy_damage):
+    print("Your damage:")
+    print(render_ascii_number(player_damage, show_sign=True))
+    print("Enemy damage:")
+    print(render_ascii_number(enemy_damage, show_sign=True))
                                                                                
 #============================================== DISPLAY FUNCTIONS =================================================
 def data():
@@ -400,9 +378,9 @@ def data():
 def stats():
     print ("=========== INFO ===========")
     print (ENEMY_ART)
-    print ("Enemys Health:  ",ehealth)
+    print (render_ascii_number(ehealth))
     print (YOU_ART)
-    print ("Your Health:    ",phealth)
+    print (render_ascii_number(phealth))
     print ("============================")
     print ("")
 
@@ -429,6 +407,9 @@ def modes():
     print ("3: Hard                         |")
     print ("                                |")
     print ("======== Type the number ========")
+    print (EASY_ART)
+    print (MEDIUM_ART)
+    print (HARD_ART)
     print ("")
 
 
@@ -720,6 +701,7 @@ while loop == 1:
                                 edamage = random.randint(minimumEnemydamageEASY,maximumEnemydamageEASY)
                                 phealth = phealth - edamage
                                 print ("You did", pdamage, "damage but the enemy did", edamage, "damage to you")
+                                show_damage_exchange(pdamage, -edamage)
                             if enemy == 2:
                                 eblock = random.randint(5,15)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 pdamage = pdamage - eblock
@@ -728,6 +710,7 @@ while loop == 1:
                                 elif pdamage > 1:
                                     ehealth = ehealth - pdamage
                                     print ("The enemy blocked your attack! You did", pdamage, "damage")
+                                    print(render_ascii_number(pdamage, show_sign=True))
                         if cmd == ("2"):
                             filler2()
                             pblock = random.randint(10,30)
@@ -739,6 +722,7 @@ while loop == 1:
                                     edamage = edamage - pblock
                                     phealth = phealth - edamage
                                     print ("The enemy attacked! The enemy did",edamage, "damage")
+                                    print(render_ascii_number(-edamage, show_sign=True))
                                 if edamage < 1:
                                     edamage = edamage - pblock
                                     phealth = phealth + edamage
@@ -756,6 +740,7 @@ while loop == 1:
                                 edamage = random.randint(minimumEnemydamageEASY,maximumEnemydamageEASY)
                                 phealth = phealth - edamage
                                 print ("You do not have any health potions to use! The enemy did", edamage,"damage to you!")
+                                print(render_ascii_number(-edamage, show_sign=True))
 
                 if mode == ("2"):
                     #=================== ENEMY STATS ====================
@@ -785,6 +770,7 @@ while loop == 1:
                                 edamage = random.randint(minimumEnemydamageMEDIUM,maximumEnemydamageMEDIUM)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 phealth = phealth - edamage
                                 print ("You did", pdamage, "damage but the enemy did", edamage, "damage to you")
+                                show_damage_exchange(pdamage, -edamage)
                             if enemy == 2:
                                 eblock = random.randint(10,20)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 pdamage = pdamage - eblock
@@ -793,6 +779,7 @@ while loop == 1:
                                 elif pdamage > 1:
                                     ehealth = ehealth - pdamage
                                     print ("The enemy blocked your attack! You did", pdamage, "damage")
+                                    print(render_ascii_number(pdamage, show_sign=True))
                         if cmd == ("2"):
                             filler2()
                             pblock = random.randint(10,30)
@@ -804,6 +791,7 @@ while loop == 1:
                                     edamage = edamage - pblock
                                     phealth = phealth - edamage
                                     print ("The enemy attacked! The enemy did",edamage, "damage")
+                                    print(render_ascii_number(-edamage, show_sign=True))
                                 if edamage < 1:
                                     edamage = edamage - pblock
                                     phealth = phealth + edamage
@@ -821,6 +809,7 @@ while loop == 1:
                                 edamage = random.randint(minimumEnemydamageMEDIUM,maximumEnemydamageMEDIUM)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 phealth = phealth - edamage
                                 print ("You do not have any health potions to use! The enemy did", edamage,"damage to you!")
+                                print(render_ascii_number(-edamage, show_sign=True))
 
                 if mode == ("3"):
                     #=================== ENEMY STATS ====================
@@ -850,6 +839,7 @@ while loop == 1:
                                 edamage = random.randint(minimumEnemydamageHARD,maximumEnemydamageHARD)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 phealth = phealth - edamage
                                 print ("You did", pdamage, "damage but the enemy did", edamage, "damage to you")
+                                show_damage_exchange(pdamage, -edamage)
                             if enemy == 2:
                                 eblock = random.randint(15,25)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 pdamage = pdamage - eblock
@@ -858,6 +848,7 @@ while loop == 1:
                                 elif pdamage > 1:
                                     ehealth = ehealth - pdamage
                                     print ("The enemy blocked your attack! You did", pdamage, "damage")
+                                    print(render_ascii_number(pdamage, show_sign=True))
                         if cmd == ("2"):
                             filler2()
                             pblock = random.randint(10,30)
@@ -869,6 +860,7 @@ while loop == 1:
                                     edamage = edamage - pblock
                                     phealth = phealth - edamage
                                     print ("The enemy attacked! The enemy did",edamage, "damage")
+                                    print(render_ascii_number(-edamage, show_sign=True))
                                 if edamage < 1:
                                     edamage = edamage - pblock
                                     phealth = phealth + edamage
@@ -886,6 +878,7 @@ while loop == 1:
                                 edamage = random.randint(minimumEnemydamageHARD,maximumEnemydamageHARD)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 phealth = phealth - edamage
                                 print ("You do not have any health potions to use! The enemy did", edamage,"damage to you!")
+                                print(render_ascii_number(-edamage, show_sign=True))
                     
         
     #====================================================================================================================
