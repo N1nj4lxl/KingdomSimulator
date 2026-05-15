@@ -138,28 +138,53 @@ currentEra = ("Stone Age")
 
 loop = 1
 
-#===============================================  FUNCTIONS =====================================================
+#============================================ HELPER FUNCTIONS ==================================================
 def filler():
     print ("")
     print ("===============================================")
     print ("")
 
+
 def filler2():
     for i in range(100):
         print ("")
 
-    
+# Centralized lock/stat unlock helper used by era progression.
+def unlock_era(era_name, unlock_items, enemy_stats):
+    for item in unlock_items:
+        globals()[item] = "UNLOCKED"
+    for stat, value in enemy_stats.items():
+        globals()[stat] = value
 
-def stats():
-    print ("=========== INFO ===========")
-    print ("")
-    print ("Your Health:    ",phealth)
-    print ("")
-    print ("Enemys Health:  ",ehealth)
-    print ("")
-    print ("============================")
-    print ("")
 
+SAVE_FIELDS = [
+    "money", "exmoney", "day", "happiness", "people", "maxpeople", "hpotion", "bread",
+    "maximumPlayerdamage", "minimumPlayerdamage", "wfight", "lfight", "currentSword",
+    "itemlock1", "itemlock2", "itemlock3", "itemlock4", "itemlock5", "itemlock6", "itemlock7",
+    "itemlock8", "itemlock10", "itemlock11", "itemlock12", "itemlock13", "itemlock14",
+    "itemlock15", "itemlock16", "itemlock17", "itemlock18", "itemlock19", "itemlock20",
+    "itemlock21", "itemlock22", "itemlock23", "itemlock24", "itemlock25", "itemlock26",
+    "itemlock27", "itemlock28", "itemlock29", "itemlock30", "itemlock31", "itemlock32",
+    "itemlock33", "itemlock34", "itemlock35", "name", "currentEra", "number"
+]
+
+
+# Save all persisted globals to .dat files.
+def save_game_data():
+    for field in SAVE_FIELDS:
+        pickle.dump(globals()[field], open(f"{field}.dat", "wb"))
+    # Keep legacy behavior intact: itemlock9.dat stores itemlock8.
+    pickle.dump(itemlock8, open("itemlock9.dat", "wb"))
+
+
+# Load all persisted globals from .dat files.
+def load_game_data():
+    for field in SAVE_FIELDS:
+        globals()[field] = pickle.load(open(f"{field}.dat", "rb"))
+    globals()["itemlock9"] = pickle.load(open("itemlock9.dat", "rb"))
+
+
+#============================================== DISPLAY FUNCTIONS =================================================
 def data():
     print ("Type [cmds] in the command box for list of commands")
     print ("")
@@ -195,6 +220,18 @@ def data():
     print (log5)
     filler()
 
+
+def stats():
+    print ("=========== INFO ===========")
+    print ("")
+    print ("Your Health:    ",phealth)
+    print ("")
+    print ("Enemys Health:  ",ehealth)
+    print ("")
+    print ("============================")
+    print ("")
+
+
 def turn():
     print ("============ Your Turn ===========")
     print ("                                 |")
@@ -204,6 +241,7 @@ def turn():
     print ("                                 |")
     print ("======== Type the number ========")
     print ("")
+
 
 def modes():
     print ("")
@@ -218,6 +256,7 @@ def modes():
     print ("======== Type the number ========")
     print ("")
 
+
 def shop():
     print ("")
     print ("========== Catagories ===========")
@@ -230,43 +269,13 @@ def shop():
     print ("Type (exit) to close the shop")
     print ("")
 
+
 def inv():
     print ("")
     print ("======== Inventory ========")
     print ("")
     print (hpotion, "x - Health Potions")
     filler()
-    
-def unlock_era(era_name, unlock_items, enemy_stats):
-    for item in unlock_items:
-        globals()[item] = "UNLOCKED"
-    for stat, value in enemy_stats.items():
-        globals()[stat] = value
-
-
-SAVE_FIELDS = [
-    "money", "exmoney", "day", "happiness", "people", "maxpeople", "hpotion", "bread",
-    "maximumPlayerdamage", "minimumPlayerdamage", "wfight", "lfight", "currentSword",
-    "itemlock1", "itemlock2", "itemlock3", "itemlock4", "itemlock5", "itemlock6", "itemlock7",
-    "itemlock8", "itemlock10", "itemlock11", "itemlock12", "itemlock13", "itemlock14",
-    "itemlock15", "itemlock16", "itemlock17", "itemlock18", "itemlock19", "itemlock20",
-    "itemlock21", "itemlock22", "itemlock23", "itemlock24", "itemlock25", "itemlock26",
-    "itemlock27", "itemlock28", "itemlock29", "itemlock30", "itemlock31", "itemlock32",
-    "itemlock33", "itemlock34", "itemlock35", "name", "currentEra", "number"
-]
-
-
-def save_game_data():
-    for field in SAVE_FIELDS:
-        pickle.dump(globals()[field], open(f"{field}.dat", "wb"))
-    # Preserve existing behavior: itemlock9.dat stores itemlock8.
-    pickle.dump(itemlock8, open("itemlock9.dat", "wb"))
-
-
-def load_game_data():
-    for field in SAVE_FIELDS:
-        globals()[field] = pickle.load(open(f"{field}.dat", "rb"))
-    globals()["itemlock9"] = pickle.load(open("itemlock9.dat", "rb"))
 
 #================================================== OPTIONS ======================================================
 
@@ -1832,7 +1841,7 @@ while loop == 1:
                                 phealth = phealth - edamage
                                 print ("You did", pdamage, "damage but the enemy did", edamage, "damage to you")
                             if enemy == 2:
-                                eblock = random.randint(5,15)#========= ONLY CHANGE THE NUMBERS ============
+                                eblock = random.randint(5,15)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 pdamage = pdamage - eblock
                                 if pdamage < 1:
                                     print ("The enemy blocked your attack! You did 0 damage")
@@ -1893,11 +1902,11 @@ while loop == 1:
                             pdamage = random.randint(minimumPlayerdamage,maximumPlayerdamage)
                             if enemy == 1:
                                 ehealth = ehealth - pdamage
-                                edamage = random.randint(minimumEnemydamageMEDIUM,maximumEnemydamageMEDIUM)#========= ONLY CHANGE THE NUMBERS ============
+                                edamage = random.randint(minimumEnemydamageMEDIUM,maximumEnemydamageMEDIUM)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 phealth = phealth - edamage
                                 print ("You did", pdamage, "damage but the enemy did", edamage, "damage to you")
                             if enemy == 2:
-                                eblock = random.randint(10,20)#========= ONLY CHANGE THE NUMBERS ============
+                                eblock = random.randint(10,20)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 pdamage = pdamage - eblock
                                 if pdamage < 1:
                                     print ("The enemy blocked your attack! You did 0 damage")
@@ -1910,7 +1919,7 @@ while loop == 1:
                             if enemy == 2:
                                 print ("The enemy did not attack! You did not get hurt")
                             if enemy == 1:
-                                edamage = random.randint(minimumEnemydamageMEDIUM,maximumEnemydamageMEDIUM)#========= ONLY CHANGE THE NUMBERS ============
+                                edamage = random.randint(minimumEnemydamageMEDIUM,maximumEnemydamageMEDIUM)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 if edamage >= 0:
                                     edamage = edamage - pblock
                                     phealth = phealth - edamage
@@ -1929,7 +1938,7 @@ while loop == 1:
                                     print ("You have used 1 Health potion. Only",hpotion, "are left")
                             if hpotion == 0:
                                 print ("")
-                                edamage = random.randint(minimumEnemydamageMEDIUM,maximumEnemydamageMEDIUM)#========= ONLY CHANGE THE NUMBERS ============
+                                edamage = random.randint(minimumEnemydamageMEDIUM,maximumEnemydamageMEDIUM)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 phealth = phealth - edamage
                                 print ("You do not have any health potions to use! The enemy did", edamage,"damage to you!")
 
@@ -1958,11 +1967,11 @@ while loop == 1:
                             pdamage = random.randint(minimumPlayerdamage,maximumPlayerdamage)
                             if enemy == 1:
                                 ehealth = ehealth - pdamage
-                                edamage = random.randint(minimumEnemydamageHARD,maximumEnemydamageHARD)#========= ONLY CHANGE THE NUMBERS ============
+                                edamage = random.randint(minimumEnemydamageHARD,maximumEnemydamageHARD)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 phealth = phealth - edamage
                                 print ("You did", pdamage, "damage but the enemy did", edamage, "damage to you")
                             if enemy == 2:
-                                eblock = random.randint(15,25)#========= ONLY CHANGE THE NUMBERS ============
+                                eblock = random.randint(15,25)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 pdamage = pdamage - eblock
                                 if pdamage < 1:
                                     print ("The enemy blocked your attack! You did 0 damage")
@@ -1975,7 +1984,7 @@ while loop == 1:
                             if enemy == 2:
                                 print ("The enemy did not attack! You did not get hurt")
                             if enemy == 1:
-                                edamage = random.randint(minimumEnemydamageHARD,maximumEnemydamageHARD)#========= ONLY CHANGE THE NUMBERS ============
+                                edamage = random.randint(minimumEnemydamageHARD,maximumEnemydamageHARD)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 if edamage >= 0:
                                     edamage = edamage - pblock
                                     phealth = phealth - edamage
@@ -1994,7 +2003,7 @@ while loop == 1:
                                     print ("You have used 1 Health potion. Only",hpotion, "are left")
                             if hpotion == 0:
                                 print ("")
-                                edamage = random.randint(minimumEnemydamageHARD,maximumEnemydamageHARD)#========= ONLY CHANGE THE NUMBERS ============
+                                edamage = random.randint(minimumEnemydamageHARD,maximumEnemydamageHARD)# Tuning note: adjust only these numeric ranges to rebalance combat.
                                 phealth = phealth - edamage
                                 print ("You do not have any health potions to use! The enemy did", edamage,"damage to you!")
                     
