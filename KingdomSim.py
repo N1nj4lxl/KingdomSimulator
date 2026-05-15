@@ -721,7 +721,8 @@ while loop == 1:
                                 if edamage < 1:
                                     edamage = edamage - pblock
                                     phealth = phealth + edamage
-                                    print ("The enemy attacked! The enemy did",edamage, "damage")
+                                    print ("Enemy dealt:")
+                                    print(render_ascii_delta(-edamage))
                         if cmd == ("3"):
                             filler2()
                             if phealth >= 1:
@@ -790,7 +791,8 @@ while loop == 1:
                                 if edamage < 1:
                                     edamage = edamage - pblock
                                     phealth = phealth + edamage
-                                    print ("The enemy attacked! The enemy did",edamage, "damage")
+                                    print ("Enemy dealt:")
+                                    print(render_ascii_delta(-edamage))
                         if cmd == ("3"):
                             filler2()
                             if phealth >= 1:
@@ -859,7 +861,8 @@ while loop == 1:
                                 if edamage < 1:
                                     edamage = edamage - pblock
                                     phealth = phealth + edamage
-                                    print ("The enemy attacked! The enemy did",edamage, "damage")
+                                    print ("Enemy dealt:")
+                                    print(render_ascii_delta(-edamage))
                         if cmd == ("3"):
                             filler2()
                             if phealth >= 1:
