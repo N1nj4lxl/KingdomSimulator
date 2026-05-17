@@ -357,6 +357,15 @@ def show_damage_exchange(player_damage, enemy_damage):
     print(render_ascii_number(player_damage, show_sign=True))
     print("Enemy damage:")
     print(render_ascii_number(enemy_damage, show_sign=True))
+
+
+def print_ascii_label_with_value(label_art, value):
+    lines = label_art.strip("\n").splitlines()
+    for i, line in enumerate(lines):
+        if i == 0:
+            print(f"{line} {value}")
+        else:
+            print(line)
                                                                                
 #============================================== DISPLAY FUNCTIONS =================================================
 def data():
@@ -397,10 +406,8 @@ def data():
 
 def stats():
     print ("=========== INFO ===========")
-    print (ENEMY_ART)
-    print (render_ascii_number(ehealth))
-    print (YOU_ART)
-    print (render_ascii_number(phealth))
+    print_ascii_label_with_value(ENEMY_ART, ehealth)
+    print_ascii_label_with_value(YOU_ART, phealth)
     print ("============================")
     print ("")
 
