@@ -225,6 +225,36 @@ FOOD_NAME_BY_ERA = {
 
 POTION_BY_ERA = ["Herbal Poultice", "Copper Tonic", "Iron Elixir", "Roman Remedy", "Knight's Draught", "Voltage Vial", "Nano Medkit"]
 
+# ================================================= RANDOM EVENTS ====================================================
+# All random events are configured in one place so they are easy to tune.
+# - Change "chance" to make an event happen more/less often (higher = more often).
+# - Change values in "effects" to rebalance event impact.
+# - Add new events by appending another dictionary with:
+#   { "name": str, "chance": float, "message": str, "effects": {resource: value} }
+# Supported effect keys: money, happiness, people, food.
+RANDOM_EVENTS = [
+    {"name": "Plagues", "chance": 0.05, "message": "A plague spread through your kingdom!", "effects": {"people": -6, "happiness": -8}},
+    {"name": "Fires", "chance": 0.06, "message": "A massive fire burned homes and granaries!", "effects": {"money": -60, "food": -3, "happiness": -5}},
+    {"name": "Droughts", "chance": 0.07, "message": "A drought ruined local crops.", "effects": {"food": -4, "happiness": -4}},
+    {"name": "Bandit raids", "chance": 0.06, "message": "Bandits raided roads and stole supplies!", "effects": {"money": -50, "food": -2, "people": -2}},
+    {"name": "Merchant visits", "chance": 0.08, "message": "Traveling merchants boosted your economy!", "effects": {"money": 80, "happiness": 4, "food": 1}},
+]
+
+def process_random_events():
+    """Process one random event per sleep cycle (if triggered)."""
+    global money, happiness, people, food, bread, log5
+    for event in RANDOM_EVENTS:
+        if random.random() < event["chance"]:
+            effects = event.get("effects", {})
+            money = max(0, money + effects.get("money", 0))
+            happiness = max(0, happiness + effects.get("happiness", 0))
+            people = max(0, people + effects.get("people", 0))
+            food = max(0, food + effects.get("food", 0))
+            bread = food
+            print(event["message"])
+            log5 = (event["name"], effects)
+            break
+
 def era_price(base_price):
     return base_price * (CURRENT_ERA_INDEX.get(currentEra, 0) + 1)
 
@@ -1048,11 +1078,11 @@ while loop == 1:
             bread = food
             happiness = happiness - 1
             next = ("awake")
+            process_random_events()
         
             if people > food:
-                randompeople = random.randint(1,10)
-                log3 = ("You have lost",randompeople,"people in your Kingdom. You need to buy more food!")
-                people = people - randompeople
+                log3 = ("You have lost 1 person in your Kingdom. You need to buy more food!",)
+                people = people - 1
 
             if happiness < 15:
                 log3 = ("You are losing people! Make them happy buy either buying food or giving them money")
@@ -1097,9 +1127,6 @@ while loop == 1:
 
 
 
-        if day == random.randint(40,75):
-            print ("You have died from unknown causes")
-            break
         if food < 0:
             print ("You have ran out of food")
         if food <= -1:
