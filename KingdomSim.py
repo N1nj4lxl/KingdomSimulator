@@ -1,6 +1,7 @@
 import random
 import time
 import pickle
+import os
 
 
 #================================================== TUTORIAL =====================================================
@@ -24,7 +25,8 @@ hpotion = 0
 famount = 0
 healed = 0
 mode = ("0")
-bread = 10
+food = 10
+bread = food  # legacy alias for older logic/save compatibility
 
 maximumPlayerdamage = 15
 minimumPlayerdamage = 5
@@ -158,7 +160,7 @@ def unlock_era(era_name, unlock_items, enemy_stats):
 
 
 SAVE_FIELDS = [
-    "money", "exmoney", "day", "happiness", "people", "maxpeople", "hpotion", "bread",
+    "money", "exmoney", "day", "happiness", "people", "maxpeople", "hpotion", "food", "bread",
     "maximumPlayerdamage", "minimumPlayerdamage", "wfight", "lfight", "currentSword",
     "itemlock1", "itemlock2", "itemlock3", "itemlock4", "itemlock5", "itemlock6", "itemlock7",
     "itemlock8", "itemlock10", "itemlock11", "itemlock12", "itemlock13", "itemlock14",
@@ -171,6 +173,7 @@ SAVE_FIELDS = [
 
 # Save all persisted globals to .dat files.
 def save_game_data():
+    globals()["bread"] = globals().get("food", globals().get("bread", 0))
     for field in SAVE_FIELDS:
         pickle.dump(globals()[field], open(f"{field}.dat", "wb"))
     # Keep legacy behavior intact: itemlock9.dat stores itemlock8.
@@ -180,8 +183,14 @@ def save_game_data():
 # Load all persisted globals from .dat files.
 def load_game_data():
     for field in SAVE_FIELDS:
-        globals()[field] = pickle.load(open(f"{field}.dat", "rb"))
+        path = f"{field}.dat"
+        if os.path.exists(path):
+            globals()[field] = pickle.load(open(path, "rb"))
     globals()["itemlock9"] = pickle.load(open("itemlock9.dat", "rb"))
+    # Keep legacy bread variable synchronized with the new food variable.
+    globals()["food"] = globals().get("food", globals().get("bread", 0))
+    globals()["bread"] = globals()["food"]
+
 
 
 
@@ -198,7 +207,22 @@ WEAPONS = [
     ("Glock", 1045000, 109, 6),("Uzi", 1100000, 114, 6),("Maxim Gun", 1150000, 119, 6),("AK-47", 1200000, 124, 6),("M1 Garand", 1300000, 130, 6),
 ]
 
-FOOD_BY_ERA = ["Foraged Berries", "Grain Sack", "Smoked Meat", "Olive Basket", "Royal Rations", "Canned Crate", "Nutrition Pack"]
+FOOD_TYPES = [
+    {"key": "basic", "base_price": 20, "food_gain": 1, "happiness_gain": 0, "people_gain": 0},
+    {"key": "hearty", "base_price": 35, "food_gain": 1, "happiness_gain": 2, "people_gain": 0},
+    {"key": "feast", "base_price": 55, "food_gain": 2, "happiness_gain": 3, "people_gain": 1},
+]
+
+FOOD_NAME_BY_ERA = {
+    "Stone Age": ["Foraged Berries", "Roasted Mammoth", "Tribal Feast"],
+    "Bronze Age": ["Grain Sack", "Spiced Goat", "Harvest Banquet"],
+    "Iron Age": ["Smoked Meat", "Iron Stew", "Warlord Feast"],
+    "Roman Age": ["Olive Basket", "Legion Rations", "Senate Banquet"],
+    "Medievil Age": ["Royal Rations", "Castle Stew", "King's Feast"],
+    "Electric Age": ["Canned Crate", "Factory Meal", "Grand Buffet"],
+    "Modern Age": ["Nutrition Pack", "Fusion Platter", "Luxury Banquet"],
+}
+
 POTION_BY_ERA = ["Herbal Poultice", "Copper Tonic", "Iron Elixir", "Roman Remedy", "Knight's Draught", "Voltage Vial", "Nano Medkit"]
 
 def era_price(base_price):
@@ -220,7 +244,43 @@ def buy_scaling_item(label, base_price, stock_var):
         return
     money -= total
     globals()[stock_var] += amount
+    if stock_var == "food":
+        globals()["bread"] = globals()["food"]
     print(f"You have successfully purchased {amount} {label}!")
+
+
+def buy_food_by_era():
+    global money, food, happiness, people, maxpeople, bread
+    era_food_names = FOOD_NAME_BY_ERA.get(currentEra, FOOD_NAME_BY_ERA["Stone Age"])
+    filler()
+    print("=========== Food Types ===========")
+    for i, food_type in enumerate(FOOD_TYPES, start=1):
+        price = era_price(food_type["base_price"])
+        label = era_food_names[i - 1]
+        food_gain = food_type["food_gain"]
+        happiness_gain = food_type["happiness_gain"]
+        people_gain = food_type["people_gain"]
+        print(f"{i}: {label} ({price} Coins) | +{food_gain} Food, +{happiness_gain} Happiness, +{people_gain} People")
+    print("")
+    choice = input("Number: ")
+    if not choice.isdigit():
+        return
+    idx = int(choice) - 1
+    if idx < 0 or idx >= len(FOOD_TYPES):
+        return
+    amount = int(input("Quantity: "))
+    selected = FOOD_TYPES[idx]
+    total = era_price(selected["base_price"]) * amount
+    if money < total:
+        print("You do not have enough Coins to purchase this item")
+        return
+    money -= total
+    food += selected["food_gain"] * amount
+    happiness += selected["happiness_gain"] * amount
+    if selected["people_gain"] > 0:
+        people = min(maxpeople, people + (selected["people_gain"] * amount))
+    bread = food
+    print(f"You have successfully purchased {amount} {era_food_names[idx]}!")
 
 def show_weapons_and_buy():
     global money, minimumPlayerdamage, maximumPlayerdamage, currentSword
@@ -385,7 +445,7 @@ def data():
     print ("")
     print ("Happiness:        ",happiness)
     print ("")
-    print ("Food:             ",bread)
+    print ("Food:             ",food)
     print ("")
     print ("Sword:            ",currentSword)
     print ("")
@@ -688,7 +748,7 @@ while loop == 1:
                     if spage == ("1"):
                         buy_scaling_item(POTION_BY_ERA[CURRENT_ERA_INDEX.get(currentEra, 0)], 500, "hpotion")
                     if spage == ("2"):
-                        buy_scaling_item(FOOD_BY_ERA[CURRENT_ERA_INDEX.get(currentEra, 0)], 20, "bread")
+                        buy_food_by_era()
                     if spage == ("3"):
                         show_weapons_and_buy()
                     if spage == ("exit"):
@@ -969,7 +1029,7 @@ while loop == 1:
                 else:
                     print ("You are too tired. You went to sleep")
                     next = ("sleep")
-                    if bread < people:
+                    if food < people:
                         filler()
                         print ("You have lost 1 Person in your Kingdom. You need to buy more food!")
                         people = people - 1
@@ -984,11 +1044,12 @@ while loop == 1:
         if next == ("sleep"):
             strength = maxstrength
             day = day + 1
-            bread = bread - 1
+            food = food - 1
+            bread = food
             happiness = happiness - 1
             next = ("awake")
         
-            if people > bread:
+            if people > food:
                 randompeople = random.randint(1,10)
                 log3 = ("You have lost",randompeople,"people in your Kingdom. You need to buy more food!")
                 people = people - randompeople
@@ -1039,11 +1100,11 @@ while loop == 1:
         if day == random.randint(40,75):
             print ("You have died from unknown causes")
             break
-        if bread < 0:
+        if food < 0:
             print ("You have ran out of food")
-        if bread <= -1:
+        if food <= -1:
             print ("You have ran out of food")
-            bread = 0
+            food = 0
         if people > maxpeople:
             print("You have found a bug! You have managed to get more people than you are allowed. This game has now ended.")
             break
