@@ -258,6 +258,46 @@ def process_random_events():
 def era_price(base_price):
     return base_price * (CURRENT_ERA_INDEX.get(currentEra, 0) + 1)
 
+
+# ================================================= LOSS CONDITIONS ===================================================
+# Add or remove losing conditions in LOSS_CONDITIONS to customize game-over rules.
+# To add a new one, append a dictionary with:
+# - "name": internal label
+# - "when": lambda that returns True when the player should lose
+# - "message": text shown to the player
+# - "on_loss": optional callback for extra state changes (for example setting money to 0)
+# Example:
+# {"name": "No Food", "when": lambda: food <= 0, "message": "Your kingdom starved.", "on_loss": lambda: globals().update({"money": 0})}
+LOSS_CONDITIONS = [
+    {
+        "name": "No people",
+        "when": lambda: people < 1,
+        "message": lambda: f"You have no-one left in {name}. You quickly became broke and unpopular",
+        "on_loss": lambda: globals().update({"people": 0, "money": 0}),
+    },
+    {
+        "name": "No happiness",
+        "when": lambda: happiness < 1,
+        "message": lambda: "Your people are not happy. They left your Kingdom and you soon became broke",
+        "on_loss": lambda: globals().update({"money": 0}),
+    },
+]
+
+def check_loss_conditions(set_menu=False):
+    """Return True when any configured loss condition is met."""
+    global play
+    for condition in LOSS_CONDITIONS:
+        if condition["when"]():
+            print(condition["message"]() if callable(condition["message"]) else condition["message"])
+            on_loss = condition.get("on_loss")
+            if callable(on_loss):
+                on_loss()
+            if set_menu:
+                play = ("menu")
+            return True
+    return False
+
+
 def buy_scaling_item(label, base_price, stock_var):
     global money
     price = era_price(base_price)
@@ -641,9 +681,7 @@ while loop == 1:
                     filler()
                     log2 = (leave, "people have left your Kingdom beacuase you did not pay them!")
     #================================================ CHECKERS ============================================================
-            if happiness < 1:
-                    print ("Your people are not happy. They left your Kingdom and you soon became broke")
-                    money = 0
+            if check_loss_conditions():
                     break
     #================================================== CMDS ===============================================================
             if cmd == ("cmds"):
@@ -681,9 +719,7 @@ while loop == 1:
 
     #==================================================== TAX ===============================================================
             if cmd.lower() == "tax":
-                if happiness < 1:
-                    print("Your people are not happy. They left your Kingdom and you soon became broke")
-                    money = 0
+                if check_loss_conditions():
                     break
                 else:
                     multiplier3 = random.randint(1, 5)
@@ -694,10 +730,7 @@ while loop == 1:
                     log1 = ("Your Strength has gone down: ", strength, "Strength Left")
     #====================================================== PAY =============================================================
             if cmd == ("pay"):
-                if people < 1:
-                   print ("You have no-one left in", name,". You quickly became broke and unpopular")
-                   people = 0
-                   money = 0
+                if check_loss_conditions():
                    break
                 else:
                     money -= 5
@@ -706,10 +739,7 @@ while loop == 1:
                     log5 = ("Your Strength has gone down: ", strength, "Strength Left")
 
             if cmd == ("Pay"):
-                if people < 1:
-                   print ("You have no-one left in", name,". You quickly became brokeand unpopular")
-                   people = 0
-                   money = 0
+                if check_loss_conditions():
                    break
                 else:
                     money -= 5
@@ -1045,16 +1075,7 @@ while loop == 1:
                     lfight += 1
 
             if strength == 0:
-                if people < 1:
-                   print ("You have no-one left in", name,". You quickly became broke and unpopular")
-                   people = 0
-                   money = 0
-                   play = ("menu")
-                   break
-                elif happiness < 1:
-                    print ("Your people are not happy. They left your Kingdom and you soon became broke")
-                    money = 0
-                    play = ("menu")
+                if check_loss_conditions(set_menu=True):
                     break
                 else:
                     print ("You are too tired. You went to sleep")
